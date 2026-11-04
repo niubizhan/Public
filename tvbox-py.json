@@ -1,0 +1,52 @@
+{
+  "spider": "",
+  "wallpaper": "",
+  "_readme": [
+    "TVBox 4.4 内置 Python 爬虫配置（无需任何服务器，TVBox 本机抓取）",
+    "api 指向仓库里的 .py 文件，TVBox 会自动下载并用自带 Python 运行时执行",
+    "国内直连 raw.githubusercontent.com 常被墙，故默认用 gh-proxy.com 镜像；",
+    "若你的网络能直连 GitHub，把 api 前缀换成 https://raw.githubusercontent.com/niubizhan/Public/main/ 即可"
+  ],
+  "sites": [
+    {
+      "key": "py_fofoys",
+      "name": "fofo影视",
+      "type": 3,
+      "api": "https://gh-proxy.com/https://raw.githubusercontent.com/niubizhan/Public/main/tvbox44_fofoys.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "changeable": 1,
+      "timeout": 30,
+      "style": ""
+    },
+    {
+      "key": "py_piaoys",
+      "name": "飘花影视",
+      "type": 3,
+      "api": "https://gh-proxy.com/https://raw.githubusercontent.com/niubizhan/Public/main/tvbox44_piaoys.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "changeable": 1,
+      "timeout": 30,
+      "style": ""
+    },
+    {
+      "key": "py_xcyycn",
+      "name": "星辰影院",
+      "type": 3,
+      "api": "https://gh-proxy.com/https://raw.githubusercontent.com/niubizhan/Public/main/tvbox44_xcyycn.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "changeable": 1,
+      "timeout": 30,
+      "style": ""
+    }
+  ],
+  "lives": [],
+  "parses": [],
+  "flags": [],
+  "ads": []
+}
