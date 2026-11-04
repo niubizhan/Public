@@ -1,0 +1,14 @@
+# 依赖
+node_modules/
+.wrangler/
+dist/
+
+# 本地抓取的探测文件（不属于项目）
+tvboxos/
+scratch/
+test/fixtures/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db

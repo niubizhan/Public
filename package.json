@@ -1,0 +1,23 @@
+{
+  "name": "tvbox44-crawler",
+  "version": "1.0.0",
+  "description": "TVBox 4.4 type=4 零 JS 爬虫接口：fofo影视 / 飘花影视 / 星辰影院，可部署到 Cloudflare Workers 与 Pages",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "pages:dev": "wrangler pages dev public",
+    "pages:deploy": "wrangler pages deploy public --project-name=tvbox44-crawler",
+    "test": "node test/api.mjs && node test/live.mjs",
+    "test:api": "node test/api.mjs",
+    "test:live": "node test/live.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^3.114.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,7 @@
+name = "tvbox44-crawler"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+# 免费额度即可运行：请求是「小 HTML 抓取 + 正则解析」，无浏览器、无 WASM。
+# 如需自定义域名，加上：
+# routes = [{ pattern = "tvbox.example.com", custom_domain = true }]
