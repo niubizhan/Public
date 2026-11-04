@@ -241,6 +241,7 @@ export default {
   key: 'xcyycn',
   name: '星辰影院',
   base: BASE,
+  types: TYPES,
   home,
   category,
   search,

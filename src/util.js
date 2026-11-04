@@ -21,7 +21,7 @@ export async function fetchText(url, opts = {}) {
     headers = {},
     referer,
     ttl = CACHE_TTL_DEFAULT,
-    timeout = 20000,
+    timeout = 30000,
   } = opts;
 
   const finalHeaders = {
@@ -46,23 +46,36 @@ export async function fetchText(url, opts = {}) {
     /* 缓存不可用时忽略 */
   }
 
-  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  const timer = ctrl ? setTimeout(() => ctrl.abort(), timeout) : null;
-
-  let res;
-  try {
-    res = await fetch(url, {
-      method,
-      headers: finalHeaders,
-      body,
-      redirect: 'follow',
-      signal: ctrl ? ctrl.signal : undefined,
-    });
-  } finally {
-    if (timer) clearTimeout(timer);
+  // 最多尝试 3 次（退避 600ms / 1500ms）：源站偶发 5xx、连接超时、境外网络抖动时自动重试；
+  // 4xx（除 429）不重试。xcyycn 的源站对境外访问时常超时，靠这里兜底。
+  const RETRY_DELAYS = [600, 1500];
+  let res = null;
+  let lastErr = null;
+  for (let attempt = 0; attempt <= RETRY_DELAYS.length; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, RETRY_DELAYS[attempt - 1]));
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), timeout) : null;
+    try {
+      res = await fetch(url, {
+        method,
+        headers: finalHeaders,
+        body,
+        redirect: 'follow',
+        signal: ctrl ? ctrl.signal : undefined,
+      });
+      lastErr = null;
+      if (res.ok) break;
+      lastErr = new Error(`HTTP ${res.status} ${url}`);
+      if (res.status < 500 && res.status !== 429) break; // 4xx 不值得重试
+    } catch (e) {
+      lastErr = e;
+      res = null;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   }
 
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
+  if (!res || !res.ok) throw lastErr || new Error(`fetch failed: ${url}`);
 
   const text = await res.text();
 

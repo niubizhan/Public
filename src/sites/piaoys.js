@@ -169,6 +169,7 @@ export default {
   key: 'piaoys',
   name: '飘花影视',
   base: BASE,
+  types: TYPES,
   home,
   category,
   search,

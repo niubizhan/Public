@@ -183,6 +183,7 @@ export default {
   key: 'fofoys',
   name: 'fofo影视',
   base: BASE,
+  types: TYPES,
   home,
   category,
   search,

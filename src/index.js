@@ -33,6 +33,12 @@ function json(data, status = 200, extra = {}) {
   });
 }
 
+/** 把上游失败原因写进 msg，方便在浏览器/TVBox 里直接看到为什么是空列表 */
+function withError(envelope, e) {
+  envelope.msg = `error: ${(e && e.message) || e}`;
+  return envelope;
+}
+
 /** TVBox 4.4 完整配置（sites 全部为 type=4 的 HTTP JSON 站点） */
 function buildConfig(origin) {
   return {
@@ -105,7 +111,7 @@ async function dispatch(site, params) {
       const vod = await site.detail(ids.split(',')[0]);
       return json(listEnvelope([vod], { page: 1, pagecount: 1, total: 1 }));
     } catch (e) {
-      return json(listEnvelope([], { page: 1, pagecount: 1, total: 0 }));
+      return json(withError(listEnvelope([], { page: 1, pagecount: 1, total: 0 }), e));
     }
   }
 
@@ -115,7 +121,7 @@ async function dispatch(site, params) {
       const r = await site.search(wd, 1);
       return json(listEnvelope(r.list, { page: 1, pagecount: r.pagecount ?? 1, total: r.total }));
     } catch (e) {
-      return json(emptyList(1));
+      return json(withError(emptyList(1), e));
     }
   }
 
@@ -131,7 +137,7 @@ async function dispatch(site, params) {
         })
       );
     } catch (e) {
-      return json(emptyList(pg));
+      return json(withError(emptyList(pg), e));
     }
   }
 
@@ -140,7 +146,7 @@ async function dispatch(site, params) {
     const r = await site.home();
     return json(homeEnvelope(r.classes, r.list));
   } catch (e) {
-    return json(homeEnvelope([], []));
+    return json(withError(homeEnvelope([], []), e));
   }
 }
 

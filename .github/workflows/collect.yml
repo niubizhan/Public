@@ -1,10 +1,16 @@
 name: 定时采集
 
-# 每天 UTC 18:00（北京时间次日 02:00）自动跑一次采集，也可以在 Actions 页面手动触发
 on:
   schedule:
-    - cron: '0 18 * * *'
-  workflow_dispatch:
+    - cron: '0 18 * * *' # 每天 UTC 18:00（北京时间次日 02:00）
+  workflow_dispatch: # Actions 页面手动触发
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'src/**'
+      - '.github/workflows/collect.yml'
+      # 注意：采集结果 data/** 不在 paths 里，避免 bot 回写触发死循环
 
 permissions:
   contents: write # 允许把采集结果提交回仓库
@@ -13,6 +19,12 @@ jobs:
   collect:
     name: 运行零 JS 爬虫采集
     runs-on: ubuntu-latest
+    env:
+      # 远程模式：走已部署的 Worker 接口采集。
+      # fofoys 对境外 IP 返回 403，GitHub runner 直连会被源站拒绝，
+      # 而 Worker 的出口在 Cloudflare，三个站都能访问。
+      # 想在 runner 上直连抓取，把这个变量删掉即可（fofoys 会失败，另两站正常）。
+      TVBOX_API_BASE: https://tvbox44-crawler.pages.dev
     steps:
       - uses: actions/checkout@v4
 
@@ -20,11 +32,13 @@ jobs:
         with:
           node-version: 22
 
-      # 依赖只有 wrangler（部署用），采集脚本本身零依赖，跳过安装也能跑
+      # 采集脚本零依赖（只用 Node 内置模块 + src/ 适配器），无需 npm install
       - name: 运行采集
+        id: collect
         run: node scripts/collect.mjs
 
       - name: 提交采集结果
+        if: always() # 即使某一步失败，也把已采到的数据提交上去
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

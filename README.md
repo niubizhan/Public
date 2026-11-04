@@ -181,6 +181,28 @@ npm run collect     # = node scripts/collect.mjs，3 个站点约 1 分钟
 > 想把采集结果做成网页看，再开一个 **GitHub Pages**（Source 选 `main` 分支 `/docs` 或用 Actions 发布）即可；
 > 接口本身仍然部署在 Cloudflare，两边互不影响。
 
+#### 境外可达性实测（决定采集该走哪条路）
+
+用 check-host 的 55 个境外节点 + Cloudflare Worker 出口实测三个源站：
+
+| 源站 | 境外直连 | 经 Cloudflare Worker | 结论 |
+|---|---|---|---|
+| **fofoys.com** | 全部 **403**（Cloudflare 地区封锁） | ✅ 正常 | 只能走 Worker（Cloudflare→Cloudflare 放行） |
+| **piaoys.com** | **55/55 全通** | ✅ 正常 | 直连、走 Worker 都行 |
+| **xcyycn.cc** | 时通时断，且在恶化（23/55 → 6/55；备用域 `xcyycn.tv` 0/55） | ❌ 大量 **520/522/超时** | **只能从国内 IP 采集** |
+
+因此：
+
+- **GitHub Actions 采集**用 `TVBOX_API_BASE`（远程模式）→ fofoys + piaoys 稳定拿到数据，
+  xcyycn 会记录 `HTTP 522` 错误并跳过（**分步容错 + 连续失败 3 步止损**，不会卡死整个任务）；
+  上次成功的 `data/xcyycn/*.json` 会保留，不会被清空。
+- **要拿到 xcyycn 的完整数据**，在能访问它的网络（国内）跑一次直连采集再推上去：
+  ```bash
+  npm run collect     # 直连模式，三站全量
+  git add data && git commit -m "chore: 本地全量采集" && git push
+  ```
+- 源站风控是动态的，某天 xcyycn 恢复可达时，Actions 会自动把它采回来。
+
 ---
 
 ## 五、本地测试

@@ -1,36 +1,48 @@
 {
-  "generatedAt": "2026-11-04T12:33:25.021Z",
-  "durationMs": 64651,
+  "generatedAt": "2026-11-04T13:41:45.115Z",
+  "mode": "remote:https://tvbox44-crawler.pages.dev",
+  "durationMs": 219800,
   "sites": [
     {
       "site": "fofoys",
       "name": "fofo影视",
+      "mode": "remote",
       "home": 35,
       "categories": 300,
       "search": 40,
       "detail": 1,
       "play": "https://vip.dytt-tvs.com/20260904/35579_eab1afa0/index.m3u8",
+      "errors": [],
       "error": ""
     },
     {
       "site": "piaoys",
       "name": "飘花影视",
-      "home": 68,
-      "categories": 376,
+      "mode": "remote",
+      "home": 71,
+      "categories": 377,
       "search": 43,
       "detail": 1,
       "play": "https://v6.rstu6.com/202311/15/cpAkukr0Dc1/video/index.m3u8",
+      "errors": [],
       "error": ""
     },
     {
       "site": "xcyycn",
       "name": "星辰影院",
-      "home": 119,
-      "categories": 266,
-      "search": 20,
-      "detail": 1,
-      "play": "https://svip.xgplay20.com/2026-10-31/51670_oV51wJ6QTD15wtmIZ4/index.m3u8",
-      "error": ""
+      "mode": "remote",
+      "home": 0,
+      "categories": 0,
+      "search": 0,
+      "detail": 0,
+      "play": "",
+      "errors": [
+        "home: HTTP 522 https://www.xcyycn.cc/",
+        "category-1: HTTP 522 https://www.xcyycn.cc/v/1.html",
+        "category-2: HTTP 522 https://www.xcyycn.cc/v/2.html",
+        "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      ],
+      "error": "home: HTTP 522 https://www.xcyycn.cc/ | category-1: HTTP 522 https://www.xcyycn.cc/v/1.html | category-2: HTTP 522 https://www.xcyycn.cc/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
