@@ -1,0 +1,376 @@
+{
+  "classes": [
+    {
+      "id": "tvseries",
+      "name": "电视剧"
+    },
+    {
+      "id": "film",
+      "name": "电影"
+    },
+    {
+      "id": "varietyshow",
+      "name": "综艺"
+    },
+    {
+      "id": "anime",
+      "name": "动漫"
+    },
+    {
+      "id": "shortplay",
+      "name": "短剧"
+    }
+  ],
+  "list": [
+    {
+      "vod_id": "tvseries/9617",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "应急响应 第二季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240521-1/7eadcbac1252251e109e5935bf14bf46.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/9853",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "庆余年 第二季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240516-1/e7333241aeb5458c762483b86a147787.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/8902",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "名门绅士2：淑女之心之纯白之恋篇",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240513-1/0943426c02529164750ad2f633be3d6e.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/9383",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "保利娜",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240527-1/138483aab2bd938c1302211bdaca7291.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/9102",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "我要抢走你的恋人。",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240414-1/fdf2d562c055b0f2bffc7911b35db49d.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/9584",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "请和搞笑的我谈恋爱",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240523-1/0fe63fe5ed1c6bcd9110bacea00806b4.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "tvseries/9370",
+      "type_id": "tvseries",
+      "type_name": "电视剧",
+      "vod_name": "狐妖小红娘·月红篇",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240523-1/cbbb15b400412dfa707e1f26fbfef8fd.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/9944",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "狐王传说",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240527-1/df1cb8bb8c9d441dfd0f5c42aa9e6efa.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/9946",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "LadyGaga：神彩巡回演唱会",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240527-1/26e48772ec0e15250006d84237a556d0.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/9945",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "谢谢你温暖我的世界",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240527-1/8c2551fc07de4d0e7d25915fd9ccd249.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/120665",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "人妻之唇烧酒之味",
+      "vod_pic": "https://hongniuzyimage.com/cover/6fbf0922153f913dd7da46c1b67a9e4e.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/121660",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "代号巴德",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251206-1/7840e14cb1e10d4eff81feab384f89b5.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/120664",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "小手指君别碰我",
+      "vod_pic": "https://hongniuzyimage.com/cover/1ebe9ef81c526d79357e34efb873bdcf.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "film/112561",
+      "type_id": "film",
+      "type_name": "电影",
+      "vod_name": "捕风追影",
+      "vod_pic": "https://hongniuzyimage.com/cover/d308e6b721da1a20041166e496f6f789.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/834",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "两天一夜 第四季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20211011-1/549d2e1608758582665bfa04707d71dd.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/835",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "Running Man",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/ab3828ba4263f89d953b21a3e3a7d798.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/130",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "毛雪汪",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/a05bc7e358a361f62d4eabbc1e8b9ecf.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/16954",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "密室大逃脱 第二季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/fdda66b0fda93edf3c16ee794b7d8eb2.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/71107",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "同床异梦2",
+      "vod_pic": "https://image.maimn.com/cover/f58d720bf94dad5b8f6fba554975ebc4.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/17342",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "高能少年团 第一季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/a7cf61211c5185af0378b41542a43df9.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "varietyshow/16139",
+      "type_id": "varietyshow",
+      "type_name": "综艺",
+      "vod_name": "高能少年团 第二季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/2d8677dda6b0eecaf103ccdc5025e348.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/331",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "宗门里除了我都是卧底",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20241014-1/bf36312cf55a6d41b843de7c9652d0c8.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/3887",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "凡人修仙传",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20211029-1/a4f9edf92a26ba526e562a40a2ed5e17.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/366",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "牧神记",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20241027-1/f8880cf8bf3040aabfb0751c372150d4.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/535",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "斗罗大陆2：绝世唐门",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240409-1/28795398416e82f71f40067272e0a511.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/437",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "斗破苍穹年番",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20220731-1/87c88da26e74c1e33ba5a5793e453373.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/290",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "吞噬星空",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20210927-1/3a86c81f9c0b42c6d4338de5f98aa80d.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "anime/117664",
+      "type_id": "anime",
+      "type_name": "动漫",
+      "vod_name": "北派盗墓笔记",
+      "vod_pic": "https://hongniuzyimage.com/cover/b67bcc5a8784b5cdb0cadb10e0280db6.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/123423",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "唐诡奇谭之九重楼",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251227-1/22686356f5cf55e1cd5e390a738ddbe1.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/124001",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "迎娶沉睡女魔头后，贴贴就变强",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260103-1/a058caa4e62bda71e97da8545f5e79bf.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/123541",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "逆子别反了，你爹我真是千古一帝",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251228-1/a7e44e16dab1fcd104393c92e45cf1bd.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/10252",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "小浩奇遇记",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20240520-1/0885f1c5d1b864d93efa097c4ec5f0f3.png",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/111768",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "万里江山入我怀",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20250805-1/6c7649ebee50ecdc2756978f4685dd7f.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/108696",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "出师一表真名世",
+      "vod_pic": "https://bbs.dyyjpro.com/assets/files/2025-06-25/1750829213-726746-30.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "shortplay/124443",
+      "type_id": "shortplay",
+      "type_name": "短剧",
+      "vod_name": "云小姐，封先生说你跑不掉了",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260108-1/30932b5d383b6df917e27e7c2ba2bd84.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    }
+  ]
+}

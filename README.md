@@ -147,6 +147,40 @@ git push -u origin main
 没有装 `gh` CLI 的话，先在 GitHub 网页新建一个空仓库（**不要**勾选 README/.gitignore），
 再执行上面三条即可。
 
+### 在 GitHub 上直接运行采集（Actions 定时任务）
+
+**GitHub 不托管 Worker**——接口运行时在 Cloudflare，GitHub 负责存代码 + 跑流水线。
+要让 GitHub「自己跑采集」，用仓库里现成的两个文件：
+
+| 文件 | 作用 |
+|---|---|
+| `scripts/collect.mjs` | 零依赖采集脚本：用与 Worker 相同的适配器抓 首页/分类/搜索/详情/播放直链，落盘 `data/**.json` |
+| `.github/workflows/collect.yml` | 每天 **UTC 18:00（北京时间 02:00）** 自动执行采集，并把结果 commit 回仓库；也支持在 Actions 页手动 Run |
+
+推上去之后：
+
+1. 仓库 **Settings → Actions → General → Workflow permissions** 选 **Read and write permissions**（否则 bot 无权 push）；
+2. 打开 **Actions** 标签 → 选 `定时采集` → **Run workflow** 手动跑一次验证；
+3. 之后每天自动跑，产物在仓库 `data/` 目录：
+
+```
+data/summary.json                    # 本次采集概览（耗时、条数、播放直链）
+data/fofoys/home.json                # 首页推荐
+data/fofoys/category-film.json       # 各分类列表
+data/fofoys/search-庆余年.json        # 搜索结果
+data/fofoys/detail-sample.json       # 详情样例（含播放组）
+data/fofoys/play-sample.json         # 解析出的 m3u8 直链
+```
+
+本地立即跑一次：
+
+```bash
+npm run collect     # = node scripts/collect.mjs，3 个站点约 1 分钟
+```
+
+> 想把采集结果做成网页看，再开一个 **GitHub Pages**（Source 选 `main` 分支 `/docs` 或用 Actions 发布）即可；
+> 接口本身仍然部署在 Cloudflare，两边互不影响。
+
 ---
 
 ## 五、本地测试

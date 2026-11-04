@@ -12,7 +12,8 @@
     "pages:deploy": "wrangler pages deploy public --project-name=tvbox44-crawler",
     "test": "node test/api.mjs && node test/live.mjs",
     "test:api": "node test/api.mjs",
-    "test:live": "node test/live.mjs"
+    "test:live": "node test/live.mjs",
+    "collect": "node scripts/collect.mjs"
   },
   "devDependencies": {
     "wrangler": "^3.114.0"

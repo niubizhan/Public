@@ -1,0 +1,37 @@
+name: 定时采集
+
+# 每天 UTC 18:00（北京时间次日 02:00）自动跑一次采集，也可以在 Actions 页面手动触发
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # 允许把采集结果提交回仓库
+
+jobs:
+  collect:
+    name: 运行零 JS 爬虫采集
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 依赖只有 wrangler（部署用），采集脚本本身零依赖，跳过安装也能跑
+      - name: 运行采集
+        run: node scripts/collect.mjs
+
+      - name: 提交采集结果
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data || true
+          if git diff --cached --quiet; then
+            echo "没有变化，跳过提交"
+          else
+            git commit -m "chore: 定时采集 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

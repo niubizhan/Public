@@ -1,0 +1,706 @@
+{
+  "classes": [
+    {
+      "id": "1",
+      "name": "电影"
+    },
+    {
+      "id": "2",
+      "name": "电视剧"
+    },
+    {
+      "id": "3",
+      "name": "动漫"
+    },
+    {
+      "id": "4",
+      "name": "综艺"
+    },
+    {
+      "id": "27",
+      "name": "短剧"
+    }
+  ],
+  "list": [
+    {
+      "vod_id": "502680",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "魅影神捕",
+      "vod_pic": "/upload/vod/20261021-1/41ef7bde23741ec36bb865599ce4ca39.jpg",
+      "vod_remarks": "",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "559677",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "我心安处是桃源",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261103-1/3a35923481016a7a468cdd8d27b06231.webp",
+      "vod_remarks": "更新至第9集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "506054",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "鉴定",
+      "vod_pic": "https://hongniuzyimage.com/cover/9bebe03cef56a08e38f082c57b2ba8c0.jpg",
+      "vod_remarks": "更新至第19集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "559794",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "御灵娘子",
+      "vod_pic": "https://hongniuzyimage.com/cover/0c6a8cac72666a1622ed6d2b3e0822f8.jpg",
+      "vod_remarks": "更新至第10集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "499796",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "舞蹈新风暴",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20260825-1/1a83025517c411c271b6f02d01570a01.webp",
+      "vod_remarks": "更新至20261104第11期下",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504604",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "偏爱之恋2",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20261020-1/842701c84a2c90b990c1f2881122a9cf.webp",
+      "vod_remarks": "更新至20261104下",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "484459",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "当家爸爸的聚会2",
+      "vod_pic": "https://viptulz.com/upload/vod/20260504-1/66f83e3d23c542d81fa053b968989b26.webp",
+      "vod_remarks": "更新至20261104萌娃纯享",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "506185",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "走马上任",
+      "vod_pic": "https://hongniuzyimage.com/cover/cf87aa07bf4739cd9fed438d1f6c1770.jpg",
+      "vod_remarks": "更新至第9集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "502689",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "花朵盛开",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261002-1/38d0431c00cc899ad6f17f563f840a5e.webp",
+      "vod_remarks": "更新至第28集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "495377",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "家庭关系证明书",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260707-1/112297d089fa25b968d801ae004be6a9.webp",
+      "vod_remarks": "更新至第73集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "505307",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "华灯起",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261026-1/5cf680ed0e76e3043b91e3cd2e04159a.webp",
+      "vod_remarks": "完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "500503",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "小婉",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260904-1/89c2692d326dcd7cdb2176bb397c8b9f.webp",
+      "vod_remarks": "更新至高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "505202",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "空枪",
+      "vod_pic": "https://img.ukuapi88.com/upload/vod/20261025-1/6512c985786cbf583b85e56cce864764.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "499061",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "欢迎来龙餐馆",
+      "vod_pic": "https://hongniuzyimage.com/cover/12c1ec2f762e0fd6ab5ccffd27ba8465.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "505627",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "敦煌英雄",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261029-1/368dae68bd76eee8d238664553f25005.webp",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "559874",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "我最好的朋友",
+      "vod_pic": "https://img.ukuapi88.com/upload/vod/20261104-1/e045aad966ac46815c0ef74f9f011be2.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "559873",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "狗狗的完美圣诞节",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261104-1/5ecfda7c4ac3143ee203a9fb62bac897.webp",
+      "vod_remarks": "更新至高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "501644",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "生化危机：爆发夜2026",
+      "vod_pic": "https://hongniuzyimage.com/cover/69b18320e9fe3ad396c48c1904f65413.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "505749",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "天启Z：新世界",
+      "vod_pic": "https://pub2.bfzy.tv/upload/vod/20261030-1/59a946e185d56016eda963b3df5ec168.webp",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "495849",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "功夫女足",
+      "vod_pic": "https://hongniuzyimage.com/cover/9875c52ef5d540a78c772457ee1cc70b.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504911",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "空枪粤语",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261023-1/e68c328ec946dc4418aa0169b009cded.webp",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "501655",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "生化危机：爆发夜",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260919-1/7191f8422dd39c9acb3d8ef600ad86e8.jpg",
+      "vod_remarks": "高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "497719",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "蜘蛛侠：崭新之日",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260731-1/56be5076242c95144d384c9b73745e7a.webp",
+      "vod_remarks": "更新至高清",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504295",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "嫁金钗",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20261016-1/10b0bf0733f211e16990ebaf5fb29f60.webp",
+      "vod_remarks": "全30集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504751",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "小城良方",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20261021-1/179eb45a518d719b997c695f8ae555b5.webp",
+      "vod_remarks": "第29集已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "503924",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "玉簟秋",
+      "vod_pic": "https://snzypic.vip/upload/vod/20261012-1/77732d1366f3a8263e5a0881139c1d89.jpg",
+      "vod_remarks": "第40集已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504975",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "尚公主",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20261023-1/b4e21c3dd6c080c5901d34876fbd7260.jpg",
+      "vod_remarks": "更新至第25集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "503752",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "蒸蒸日上",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261010-1/47b94f87faa4c5008d651e934285c040.webp",
+      "vod_remarks": "第22集已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "503653",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "伟大的长征",
+      "vod_pic": "https://hongniuzyimage.com/cover/932878e1dc30bacd71f1a4245b8ba84b.jpg",
+      "vod_remarks": "更新至45集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "501094",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "兰香如故",
+      "vod_pic": "https://hongniuzyimage.com/cover/ea1f901d18c2ec1083053ba1e243c737.jpg",
+      "vod_remarks": "全47集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "505731",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "北境往事",
+      "vod_pic": "https://hongniuzyimage.com/cover/69f200b8519d963f7379a7d4a61b4f11.jpg",
+      "vod_remarks": "更新至14集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "503979",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "璀璨之城粤语",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20261012-1/348bf263b18fc2a9e957fa97486334ec.webp",
+      "vod_remarks": "更新第17集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "429105",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "爱你",
+      "vod_pic": "https://img.ukuapi.com/https://pic2.iqiyipic.com/image/20250218/0b/85/a_100568927_m_601_m6_579_772.webp",
+      "vod_remarks": "第28集已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "465250",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "光阴之外",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251228-1/4205cf9c25e3a61be1e9ce3bda43ee26.jpg",
+      "vod_remarks": "更新至46集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "456106",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "罪恶之渊",
+      "vod_pic": "https://shandianpic.vip/upload/vod/20251022-1/a25da6c6bf56aaa3db49c6df35f8c38d.jpg",
+      "vod_remarks": "第08集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "503112",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "女友的朋友",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261005-1/17b6763a3d99f76e3c3717cc6bb2c884.webp",
+      "vod_remarks": "更新第05集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "497428",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "一斩苍穹",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260728-1/2639864c3a8adbcbfcaea57fcb08a8c3.webp",
+      "vod_remarks": "更新至16集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "464835",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "剑来第二季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251225-1/84802c61243bfe7618982362c8229d3d.jpg",
+      "vod_remarks": "全27集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "502861",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "黑色五叶草第二季",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261003-1/fa6f5554aab20c39cf7065e2ab51e16c.webp",
+      "vod_remarks": "更新至05集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "496588",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "择日飞升",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260718-1/92bd85d0c40dd9c7cf8565f114ccd38b.jpg",
+      "vod_remarks": "更新至18集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "494162",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "死神 千年血战篇 祸进谭",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260628-1/75151aa884b147afe882cbcf143fae7f.jpg",
+      "vod_remarks": "全10集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "493559",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "斩神之凡尘神域Ⅱ",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20260625-1/2d6fda7e4c586c3b2d8ebd47b48b8301.webp",
+      "vod_remarks": "全15集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "495088",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "正后方的神威",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260704-1/9e53d83b40fa0bb7915221b738a7f41c.webp",
+      "vod_remarks": "更新至第12集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "502563",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "熊出没之神奇宝物2",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20261001-1/fc7e7ae5905ac8b12630f2c5a1c7700e.webp",
+      "vod_remarks": "全52集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "494817",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "尼古喵喵",
+      "vod_pic": "https://img.picbf.com/upload/vod/20260703-1/143189af11a30b23543397e45a4f4efd.webp",
+      "vod_remarks": "全12集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "500606",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "现在就出发第四季",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20260905-1/c77f7547d585f7ecf909579e8595ac1a.webp",
+      "vod_remarks": "更新至20261103期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "504815",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "后会友期",
+      "vod_pic": "https://img.lzipic.com/upload/vod/20261022-1/412f6b55014314336d1a50bdcbd3a49d.webp",
+      "vod_remarks": "更新至20261030期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "466001",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "你好，星期六2026",
+      "vod_pic": "https://img.ukuapi.com/https://2img.hitv.com/preview/sp_images/2025/12/22/202512221401576585192.jpg",
+      "vod_remarks": "更新至20261102期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "455601",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "现在就出发第三季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20251018-1/8dbebdbd742b41e24c48195fd9a32784.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "448009",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "巴黎合伙人",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20250814-1/e0c0648850ae10064b58b6c0483b5d35.jpg",
+      "vod_remarks": "超长营业第11期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "475624",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "JOJO的奇妙冒险飙马野郎",
+      "vod_pic": "https://viptulz.com/upload/vod/20260319-1/a9c192365b3947ed1751624e567696c3.webp",
+      "vod_remarks": "更新至第07集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "498612",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "披荆斩棘2026",
+      "vod_pic": "https://img.ukuapi88.com/upload/vod/20260809-1/75a7d0ce7a14d3728c47af8625632602.webp",
+      "vod_remarks": "更新至20261031期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "442543",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "我们的宿舍",
+      "vod_pic": "https://viptulz.com/upload/vod/20250623-1/905c830385a094e0d1ab8681888b0af5.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "497745",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "心动的信号第九季",
+      "vod_pic": "https://pic.youkupic.com/upload/vod/20260731-1/6b5345143b7d7346c44adc1262c6e676.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "500509",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "花儿与少年第八季",
+      "vod_pic": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2935448198.webp",
+      "vod_remarks": "更新至20261101期",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "499498",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "我家那闺女2026",
+      "vod_pic": "https://snzypic.vip/upload/vod/20260821-1/4dfaf3923da4f7da67d57664b580a135.jpg",
+      "vod_remarks": "更新至20261104",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "545576",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "爱如蔷薇绽放时",
+      "vod_pic": "https://hongniuzyimage.com/cover/57742c75c5e060d25c9122dfa9b8f868.jpg",
+      "vod_remarks": "第61-82集完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "524010",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "君心予禧",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260710-1/a5dfaf1b4c2e3fac391f51bcad6feaff.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "523973",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "终得万丈锋芒",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260710-1/2f062721b25e0380196da7068fb37395.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "523353",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "碎玉断情，这摄政王妃我不当了",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260718-1/11ff831ce8f081fff95c2c9d5978d948.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "525208",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "我在末世当厨子，丧尸全成我保镖",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260626-1/c7c77582a7b9af69dc19e01a15a0ea5d.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "524879",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "傅大人，崽崽的爹找上门来了",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260628-1/d8afc473fd8671992038709736c54bd1.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "524639",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "流放刚好在和离后2",
+      "vod_pic": "https://p.bfvp26.com/upload/vod/20260630-1/b9fc2f10aa580b9c80875d2baeca4971.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "529224",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "考影重重",
+      "vod_pic": "https://snzypic.vip/upload/vod/20260915-1/8cd859cfbe2795fee09757846d5ea9d4.jpg",
+      "vod_remarks": "全集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "528945",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "青果成酿",
+      "vod_pic": "https://snzypic.vip/upload/vod/20260927-1/eb44ef17d7e9396ed36ddd661f3ce002.jpg",
+      "vod_remarks": "全集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "531956",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "拿废料坑我破产？我一眼透视切出帝王绿",
+      "vod_pic": "https://snzypic.vip/upload/vod/20260518-1/c2412d57e2c94473bc8a129e4a0f69a0.jpg",
+      "vod_remarks": "全集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "531897",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "重生1983：从高考状元到最强村支书",
+      "vod_pic": "https://snzypic.vip/upload/vod/20260521-1/59aead02fbee3647d4bf5336bd8615a2.jpg",
+      "vod_remarks": "全集",
+      "vod_blurb": "",
+      "vod_content": ""
+    },
+    {
+      "vod_id": "534230",
+      "type_id": "",
+      "type_name": "",
+      "vod_name": "让你代写情书，小案首你落笔惊哭大儒第四季",
+      "vod_pic": "https://p.lztutu.com/upload/vod/20261016-1/04766121fd9999ac516a2b3c6bb3f7af.jpg",
+      "vod_remarks": "已完结",
+      "vod_blurb": "",
+      "vod_content": ""
+    }
+  ]
+}
