@@ -73,6 +73,16 @@ vod_remarks/vod_year/vod_area/vod_actor/vod_director/vod_content/vod_play_from/v
 
 ## 三、部署到 Cloudflare
 
+> **已部署示例（本项目实测可用）**
+>
+> | 入口 | 地址 | 状态 |
+> |---|---|---|
+> | **Cloudflare Pages（推荐）** | `https://tvbox44-crawler.pages.dev/` | ✅ 首页/分类/搜索/详情/播放全通 |
+> | Cloudflare Workers | `https://tvbox44-crawler.562347955.workers.dev/` | ✅ 部署成功（`*.workers.dev` 在大陆被 DNS 污染，需代理或绑自有域名才能访问） |
+>
+> TVBox 里直接填 **`https://tvbox44-crawler.pages.dev/`** 即可。
+> 想换成自己的域名：Workers → Settings → Domains & Routes → Add Custom Domain。
+
 ### 方式 A：Cloudflare Workers（推荐）
 
 **A1. 命令行（wrangler）**
