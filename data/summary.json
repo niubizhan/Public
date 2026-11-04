@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-04T13:46:38.223Z",
+  "generatedAt": "2026-11-04T23:05:21.676Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 61336,
+  "durationMs": 209332,
   "sites": [
     {
       "site": "fofoys",
@@ -19,7 +19,7 @@
       "site": "piaoys",
       "name": "飘花影视",
       "mode": "remote",
-      "home": 71,
+      "home": 69,
       "categories": 377,
       "search": 43,
       "detail": 1,
@@ -31,13 +31,18 @@
       "site": "xcyycn",
       "name": "星辰影院",
       "mode": "remote",
-      "home": 120,
-      "categories": 266,
-      "search": 20,
-      "detail": 1,
-      "play": "https://v.fengbao14.com/video/jiangshikaizhai/07f9466bf2ce/index.m3u8",
-      "errors": [],
-      "error": ""
+      "home": 119,
+      "categories": 56,
+      "search": 0,
+      "detail": 0,
+      "play": "",
+      "errors": [
+        "category-2: HTTP 522 https://www.xcyycn.cc/v/2.html",
+        "category-3: HTTP 520 https://www.xcyycn.cc/v/3.html",
+        "category-4: The operation was aborted",
+        "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      ],
+      "error": "category-2: HTTP 522 https://www.xcyycn.cc/v/2.html | category-3: HTTP 520 https://www.xcyycn.cc/v/3.html | category-4: The operation was aborted | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
