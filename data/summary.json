@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-04T13:41:45.115Z",
+  "generatedAt": "2026-11-04T13:46:38.223Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 219800,
+  "durationMs": 61336,
   "sites": [
     {
       "site": "fofoys",
@@ -31,18 +31,13 @@
       "site": "xcyycn",
       "name": "星辰影院",
       "mode": "remote",
-      "home": 0,
-      "categories": 0,
-      "search": 0,
-      "detail": 0,
-      "play": "",
-      "errors": [
-        "home: HTTP 522 https://www.xcyycn.cc/",
-        "category-1: HTTP 522 https://www.xcyycn.cc/v/1.html",
-        "category-2: HTTP 522 https://www.xcyycn.cc/v/2.html",
-        "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
-      ],
-      "error": "home: HTTP 522 https://www.xcyycn.cc/ | category-1: HTTP 522 https://www.xcyycn.cc/v/1.html | category-2: HTTP 522 https://www.xcyycn.cc/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "home": 120,
+      "categories": 266,
+      "search": 20,
+      "detail": 1,
+      "play": "https://v.fengbao14.com/video/jiangshikaizhai/07f9466bf2ce/index.m3u8",
+      "errors": [],
+      "error": ""
     }
   ]
 }
