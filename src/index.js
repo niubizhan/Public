@@ -85,6 +85,33 @@ const UA =
   'Mozilla/5.0 (Linux; Android 12; TVBox) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';
 
 /**
+ * 列表条目索引（id -> vod）。
+ *
+ * TVBox 首页加载完分类/推荐后会立刻再发一次 `?ac=detail&ids=一长串`，
+ * 把推荐位的每条都换成「完整详情」。对灰产源站来说这就是十几次详情页抓取，
+ * 实测要 11~13 秒，首页就一直转圈，用户以为点不动。
+ *
+ * 其实这份批量数据只用于渲染首页卡片（片名/海报/备注），点进详情时
+ * DetailActivity 会重新按单个 id 请求。所以这里把首页/分类/搜索已经拿到的
+ * 列表条目缓存起来，批量请求直接命中，秒回。
+ */
+const VOD_INDEX = new Map();
+const VOD_INDEX_MAX = 1200;
+
+/** 存副本：rewritePics 会原地改写 vod_pic，存引用会让图片被二次套代理 */
+function indexVods(list) {
+  for (const v of list || []) {
+    if (!v || !v.vod_id) continue;
+    const id = String(v.vod_id);
+    VOD_INDEX.delete(id);
+    VOD_INDEX.set(id, { ...v });
+  }
+  while (VOD_INDEX.size > VOD_INDEX_MAX) {
+    VOD_INDEX.delete(VOD_INDEX.keys().next().value);
+  }
+}
+
+/**
  * 封面图内存缓存（LRU，最近 240 张）。
  * 一屏列表就有 20 多张图，滚动时同一张会被反复请求，回源太浪费。
  */
@@ -302,28 +329,40 @@ async function dispatch(site, params, origin) {
 
     if (idList.length > 1) {
       const cap = idList.slice(0, 24);
-      const out = new Array(cap.length).fill(null);
-      let cursor = 0;
-      // 源站是灰产站点，并发太高会直接 403/断连，这里限 5。
-      const lanes = Array.from({ length: Math.min(5, cap.length) }, async () => {
-        for (;;) {
-          const i = cursor++;
-          if (i >= cap.length) return;
-          out[i] = await fetchOne(cap[i], false);
-        }
+
+      // 先用列表索引兜住：首页推荐位的 ids 就是刚才首页 list 里的那批，
+      // 全部命中时这个请求从十几秒降到几毫秒（首页不再长时间转圈）。
+      const out = cap.map((id) => VOD_INDEX.get(String(id)) || null);
+
+      const missing = [];
+      out.forEach((v, i) => {
+        if (!v) missing.push(i);
       });
-      await Promise.all(lanes);
+
+      if (missing.length) {
+        let cursor = 0;
+        // 源站是灰产站点，并发太高会直接 403/断连，这里限 5。
+        const lanes = Array.from({ length: Math.min(5, missing.length) }, async () => {
+          for (;;) {
+            const k = cursor++;
+            if (k >= missing.length) return;
+            const i = missing[k];
+            out[i] = await fetchOne(cap[i], false);
+          }
+        });
+        await Promise.all(lanes);
+      }
 
       // 补漏：源站偶发超时/断连，第一轮失败的再串一轮。
       // 少一条就会让 TVBox 认为该条目「本源没有详情」，点进去就会跳到它的多源搜索，
       // 所以宁可多花几百毫秒也要把条数补齐。
-      const missing = [];
+      const stillMissing = [];
       out.forEach((v, i) => {
-        if (!v || !v.vod_name) missing.push(i);
+        if (!v || !v.vod_name) stillMissing.push(i);
       });
-      if (missing.length) {
+      if (stillMissing.length) {
         await Promise.all(
-          missing.slice(0, 10).map(async (i) => {
+          stillMissing.slice(0, 10).map(async (i) => {
             out[i] = await fetchOne(cap[i], true);
           })
         );
@@ -350,6 +389,7 @@ async function dispatch(site, params, origin) {
   if (wd) {
     try {
       const r = await site.search(wd, 1);
+      indexVods(r.list);
       return json(
         listEnvelope(rewritePics(r.list, origin, site.base), {
           page: 1,
@@ -368,6 +408,7 @@ async function dispatch(site, params, origin) {
     if (!params.get('t')) {
       try {
         const r = await site.home();
+        indexVods(r.list);
         return json(homeListEnvelope(r.classes, rewritePics(r.list, origin, site.base)));
       } catch (e) {
         return json(withError(homeListEnvelope([], []), e));
@@ -375,6 +416,7 @@ async function dispatch(site, params, origin) {
     }
     try {
       const r = await site.category(params.get('t') || '', pg);
+      indexVods(r.list);
       return json(
         listEnvelope(rewritePics(r.list, origin, site.base), {
           page: r.page ?? pg,
@@ -390,6 +432,7 @@ async function dispatch(site, params, origin) {
   // 5) 首页：class = 分类导航，list = 首页推荐
   try {
     const r = await site.home();
+    indexVods(r.list);
     return json(homeEnvelope(r.classes, rewritePics(r.list, origin, site.base)));
   } catch (e) {
     return json(withError(homeEnvelope([], []), e));
