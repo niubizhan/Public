@@ -85,6 +85,63 @@ const UA =
   'Mozilla/5.0 (Linux; Android 12; TVBox) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';
 
 /**
+ * 封面图内存缓存（LRU，最近 240 张）。
+ * 一屏列表就有 20 多张图，滚动时同一张会被反复请求，回源太浪费。
+ */
+const IMG_CACHE = new Map();
+const IMG_CACHE_MAX = 240;
+
+function imgCacheGet(key) {
+  const hit = IMG_CACHE.get(key);
+  if (!hit) return null;
+  IMG_CACHE.delete(key);
+  IMG_CACHE.set(key, hit);
+  return hit;
+}
+
+function imgCacheSet(key, value) {
+  if (IMG_CACHE.size >= IMG_CACHE_MAX) {
+    const oldest = IMG_CACHE.keys().next().value;
+    IMG_CACHE.delete(oldest);
+  }
+  IMG_CACHE.set(key, value);
+}
+
+/**
+ * 图片回源并发闸门。
+ * 一屏列表会让电视同时要 20+ 张图，这些灰产图床对同一 IP 的高并发很敏感，
+ * 直接并发打过去会成片超时/502（表现为部分海报空白）。限制 6 路，其余排队。
+ */
+const IMG_MAX_CONCURRENCY = 12;
+let imgRunning = 0;
+const imgQueue = [];
+
+async function withImgSlot(fn) {
+  if (imgRunning >= IMG_MAX_CONCURRENCY) {
+    await new Promise((resolve) => imgQueue.push(resolve));
+  }
+  imgRunning += 1;
+  try {
+    return await fn();
+  } finally {
+    imgRunning -= 1;
+    const next = imgQueue.shift();
+    if (next) next();
+  }
+}
+
+/** 带超时的 fetch：图床卡住时不能一直占着闸门 */
+async function fetchWithTimeout(url, init = {}, ms = 8000) {
+  const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctl ? setTimeout(() => ctl.abort(), ms) : null;
+  try {
+    return await fetch(url, ctl ? { ...init, signal: ctl.signal } : init);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+/**
  * m3u8 里的相对地址改成绝对地址。
  *
  * 播放器拿到的清单地址是本机服务（/v/...），如果清单里还是 `/20260101/xx/seg-1.ts`
@@ -119,6 +176,37 @@ function absolutize(text, base) {
     }
   }
   return out.join('\n');
+}
+
+/**
+ * 封面图统一走本机代理。
+ *
+ * 三个源用了十多个图床，其中不少是灰产 CDN：电视（Android 4.4）直连时会碰到
+ * DNS 污染、证书链不兼容、防盗链 403 等各种问题，表现就是列表里一片首字色块。
+ * 本机能正常取到这些图，所以把 vod_pic 换成本机 /img?u= 代理地址，
+ * 由服务端代取后回传给电视，顺带把源站返回的相对路径也补成绝对地址。
+ */
+function picUrlFor(origin, absUrl) {
+  return `${origin}/img?u=${encodeURIComponent(absUrl)}`;
+}
+
+function rewritePics(list, origin, siteBase) {
+  for (const v of list || []) {
+    for (const field of ['vod_pic', 'vod_pic_thumb', 'vod_pic_slide']) {
+      const raw = String(v[field] || '').trim();
+      if (!raw) continue;
+      let abs = raw;
+      if (!/^https?:\/\//i.test(raw)) {
+        try {
+          abs = new URL(raw, siteBase).toString();
+        } catch {
+          continue;
+        }
+      }
+      v[field] = picUrlFor(origin, abs);
+    }
+  }
+  return list;
 }
 
 /** 详情里把播放 token 包装成本机可播的 m3u8 地址（type=1 只认这种直链） */
@@ -177,22 +265,98 @@ async function dispatch(site, params, origin) {
   }
 
   // 2) 详情
+  // ids 可能是单个，也可能是 TVBox 预取时拼起来的一整页（逗号分隔，实测 9~20 个）。
+  // 之前只取第一个，其余条目在 TVBox 侧就拿不到详情，点进去会被判成「本源没内容」，
+  // 进而触发它的多源兜底搜索 —— 表现就是「点列表跳到搜索页」。所以这里必须全部返回。
   if (ids) {
-    try {
-      const vod = await site.detail(ids.split(',')[0]);
-      const env = listEnvelope([vod], { page: 1, pagecount: 1, total: 1 });
-      env.list[0] = rewritePlayUrls(env.list[0], origin, site.key);
+    const idList = ids
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    // 源站偶发返回验证页/空壳，detail() 会解析出没有片名或没有播放列表的 vod。
+    // 单条时重试一次；批量时为了不把响应拖长，只保留能解析出片名的。
+    const fetchOne = async (id, retry) => {
+      try {
+        const v = await site.detail(id);
+        if (v && v.vod_name && v.vod_play_url) return v;
+        if (v && v.vod_name && !retry) return v;
+        if (retry) {
+          await new Promise((r) => setTimeout(r, 250));
+          const v2 = await site.detail(id);
+          return v2 && v2.vod_name ? v2 : v || v2;
+        }
+        return v;
+      } catch (e) {
+        if (retry) {
+          await new Promise((r) => setTimeout(r, 250));
+          try {
+            return await site.detail(id);
+          } catch {
+            return null;
+          }
+        }
+        return null;
+      }
+    };
+
+    if (idList.length > 1) {
+      const cap = idList.slice(0, 24);
+      const out = new Array(cap.length).fill(null);
+      let cursor = 0;
+      // 源站是灰产站点，并发太高会直接 403/断连，这里限 5。
+      const lanes = Array.from({ length: Math.min(5, cap.length) }, async () => {
+        for (;;) {
+          const i = cursor++;
+          if (i >= cap.length) return;
+          out[i] = await fetchOne(cap[i], false);
+        }
+      });
+      await Promise.all(lanes);
+
+      // 补漏：源站偶发超时/断连，第一轮失败的再串一轮。
+      // 少一条就会让 TVBox 认为该条目「本源没有详情」，点进去就会跳到它的多源搜索，
+      // 所以宁可多花几百毫秒也要把条数补齐。
+      const missing = [];
+      out.forEach((v, i) => {
+        if (!v || !v.vod_name) missing.push(i);
+      });
+      if (missing.length) {
+        await Promise.all(
+          missing.slice(0, 10).map(async (i) => {
+            out[i] = await fetchOne(cap[i], true);
+          })
+        );
+      }
+
+      const vods = out.filter((v) => v && v.vod_name);
+      const env = listEnvelope(vods, { page: 1, pagecount: 1, total: vods.length });
+      env.list = env.list.map((v) => rewritePlayUrls(v, origin, site.key));
+      rewritePics(env.list, origin, site.base);
       return json(env);
-    } catch (e) {
-      return json(withError(listEnvelope([], { page: 1, pagecount: 1, total: 0 }), e));
     }
+
+    const vod = await fetchOne(idList[0], true);
+    if (!vod || !vod.vod_name) {
+      return json(withError(listEnvelope([], { page: 1, pagecount: 1, total: 0 }), '详情为空'));
+    }
+    const env = listEnvelope([vod], { page: 1, pagecount: 1, total: 1 });
+    env.list[0] = rewritePlayUrls(env.list[0], origin, site.key);
+    rewritePics(env.list, origin, site.base);
+    return json(env);
   }
 
   // 3) 搜索（TVBox 4.4 搜索不带 pg，固定第 1 页）
   if (wd) {
     try {
       const r = await site.search(wd, 1);
-      return json(listEnvelope(r.list, { page: 1, pagecount: r.pagecount ?? 1, total: r.total }));
+      return json(
+        listEnvelope(rewritePics(r.list, origin, site.base), {
+          page: 1,
+          pagecount: r.pagecount ?? 1,
+          total: r.total,
+        })
+      );
     } catch (e) {
       return json(withError(emptyList(1), e));
     }
@@ -204,7 +368,7 @@ async function dispatch(site, params, origin) {
     if (!params.get('t')) {
       try {
         const r = await site.home();
-        return json(homeListEnvelope(r.classes, r.list));
+        return json(homeListEnvelope(r.classes, rewritePics(r.list, origin, site.base)));
       } catch (e) {
         return json(withError(homeListEnvelope([], []), e));
       }
@@ -212,7 +376,7 @@ async function dispatch(site, params, origin) {
     try {
       const r = await site.category(params.get('t') || '', pg);
       return json(
-        listEnvelope(r.list, {
+        listEnvelope(rewritePics(r.list, origin, site.base), {
           page: r.page ?? pg,
           pagecount: r.pagecount ?? 1,
           total: r.total,
@@ -226,7 +390,7 @@ async function dispatch(site, params, origin) {
   // 5) 首页：class = 分类导航，list = 首页推荐
   try {
     const r = await site.home();
-    return json(homeEnvelope(r.classes, r.list));
+    return json(homeEnvelope(r.classes, rewritePics(r.list, origin, site.base)));
   } catch (e) {
     return json(withError(homeEnvelope([], []), e));
   }
@@ -250,6 +414,83 @@ export default {
     // 接口自述
     if (path === '/api' || path === '/help') {
       return json(helpDoc(url.origin));
+    }
+
+    // 封面图代理：/img?u={原图绝对地址}
+    // 电视端（Android 4.4）对部分灰产图床的 DNS 解析和证书链不友好，直连会白图；
+    // 本机能取到，所以统一由服务端代取后回传。
+    if (path === '/img') {
+      const u = params.get('u') || '';
+      if (!/^https?:\/\//i.test(u)) return new Response('bad url', { status: 400 });
+
+      const hit = imgCacheGet(u);
+      if (hit) {
+        return new Response(hit.buf, {
+          headers: {
+            'Content-Type': hit.ct,
+            'Cache-Control': 'public, max-age=604800',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      }
+
+      let referer = '';
+      let host = '';
+      try {
+        host = new URL(u).host;
+      } catch {
+        return new Response('bad url', { status: 400 });
+      }
+      // 豆瓣图床不做 Referer 会直接 418
+      if (/doubanio\.com$/i.test(host) || /douban\.com$/i.test(host)) {
+        referer = 'https://movie.douban.com/';
+      } else {
+        for (const s of SITES) {
+          if (u.startsWith(s.base)) {
+            referer = `${s.base}/`;
+            break;
+          }
+        }
+      }
+      const headers = { 'User-Agent': UA };
+      if (referer) headers.Referer = referer;
+
+      try {
+        const got = await withImgSlot(async () => {
+          let lastErr = null;
+          // 图床偶发 ECONNRESET/限流，重试一次基本能过
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+              const up = await fetchWithTimeout(u, { headers }, 7000);
+              if (!up.ok) throw new Error(`upstream ${up.status}`);
+              const ct = up.headers.get('content-type') || 'image/jpeg';
+              const buf = await up.arrayBuffer();
+              if (!buf.byteLength) throw new Error('empty body');
+              return { buf, ct };
+            } catch (e) {
+              lastErr = e;
+              if (attempt === 0) await new Promise((r) => setTimeout(r, 150));
+            }
+          }
+          throw lastErr;
+        });
+        imgCacheSet(u, got);
+        return new Response(got.buf, {
+          status: 200,
+          headers: {
+            'Content-Type': got.ct,
+            'Cache-Control': 'public, max-age=604800',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      } catch (e) {
+        // 本机也取不到（图床限流/超时）时，退化成 302 让电视自己直连试一次，
+        // 总比回一个 502 让海报空着强。
+        return new Response(null, {
+          status: 302,
+          headers: { Location: u, 'Cache-Control': 'no-store' },
+        });
+      }
     }
 
     // 播放直链：/v/{site}/index.m3u8?t={token}&f={flag}
