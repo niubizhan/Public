@@ -34,7 +34,7 @@ import (
 	"time"
 )
 
-const appVersion = "1.0.0"
+const appVersion = "1.1.0"
 
 // 播放器/上游 UA：取 m3u8 时代入，避免部分 CDN 拒绝空 UA。
 const playerUA = "Mozilla/5.0 (Linux; Android 12; TVBox) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
@@ -613,6 +613,8 @@ func helpDoc(origin string) map[string]interface{} {
 			"搜索":           "GET {api}?wd={关键词}&ac=detail&quick=true",
 			"详情":           "GET {api}?ac=detail&ids={vod_id}",
 			"播放":           "GET {api}?play={token}&flag={线路名}",
+			"直播列表":         "GET /live.txt（TVBox 直播源填这个地址）",
+			"直播清单代理":       "GET /lv?u={base64}",
 		},
 	}
 }
@@ -673,6 +675,12 @@ func main() {
 		case path == "/img":
 			handleImage(lw, r)
 
+		case path == "/live.txt" || path == "/live" || path == "/lives.txt":
+			handleLiveList(lw, r)
+
+		case path == "/lv":
+			handleLivePlaylist(lw, r)
+
 		case strings.HasPrefix(path, "/v/"):
 			handlePlaylist(lw, r)
 
@@ -712,6 +720,9 @@ func main() {
 			log.Fatalf("listen: %v", err)
 		}
 	}()
+
+	// 直播列表后台预热（首次要十几秒，别让电视等）
+	go warmLiveList()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
