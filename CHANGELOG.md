@@ -1,6 +1,49 @@
 # 变更记录
 
-TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）。
+TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
+
+## v1.4.0 — 2026-11-05
+
+### 新增：Go 版源站服务，部署到电视本机运行（`tvgo/`）
+
+**动机**：原方案服务跑在电脑 8787 端口，电脑关机/睡眠电视就没数据。用户明确说「电脑无法当源服务器」。
+
+**选型**：电视是 Android 4.4.3 / armv7。CPython 没有 4.4 的构建（交叉编译要 NDK + bionic 补丁，`ssl`/`socket`/`ctypes` 全是坑，体积 40MB 起），Termux 要求 Android 5.0+。Go 一条命令产出 5.9MB 静态二进制（`CGO_ENABLED=0` 不依赖 libc），且自带 TLS 栈，反而绕开了 Android 4.4 只支持老密码套件的问题。
+
+**实现**：把 `src/` 下全部 JS 逻辑逐函数移植到 Go（标准库，零外部依赖），保持接口契约完全一致：
+
+- `main.go` 路由、配置、`/img` 封面代理、`/v/` 清单代理、VOD_INDEX
+- `maccms.go` 信封（`action` 必须缺席、`group_id`/`type_id_1` 必须是数字）
+- `fofoys.go` / `piaoys.go` / `xcyycn.go` 三个站点解析
+- JS 正则用了后行断言（`(?<![\w-])`、`(?<!data-)`），Go 的 RE2 不支持，
+  改成「属性前必须是空白或标签开头」，效果等价
+
+**部署**：
+
+- 二进制 `/data/local/tmp/tvbox44`，脚本 `/data/local/tmp/boot-tvbox.sh`
+- 开机自启挂 `/system/etc/install-recovery.sh`（init.rc 的 `class main` oneshot）。
+  该文件原本是 **644 没有执行位**，init 一直 `execve: Permission denied`，
+  补 `chmod 755` 后才真正生效；原工厂看门狗逻辑完整保留
+- TVBox 的接口地址存在 Hawk 里（AES 加密），推送服务 `do=api` 在源码里
+  只处理 `do=refresh&type=danmaku`，其余直接返回 ok 什么都不做——
+  这条改配置的路是假象。改用 DNAT 在电视内部把旧地址
+  `192.168.5.12:8787` 导到 `127.0.0.1:8787`，**TVBox 配置一个字不用改**
+
+**踩坑**（桌面调试完全看不出来，只有交叉编译到 ARM 才暴露）：
+
+1. Android 没有 `/etc/resolv.conf`，Go 解析器直接失败 → 启动时 `getprop net.dns1` 取 DNS，塞进自定义 `net.Resolver`
+2. Go 的 `crypto/x509` 只认桌面 CA 路径，Android 的根证书在 `/system/etc/security/cacerts/*.0` → 内嵌 Mozilla CA 包 + 叠加系统目录；另加「证书校验失败的请求降级重试」兜底
+3. 4.4 没有 `killall`/`awk`/`sed`/`head`/`tail`/`wc`/`which`/`printf`/`nohup`/`setsid` → 脚本只用 `ps | grep` + shell 分词
+4. 内核 netfilter 不支持 `REDIRECT` 目标 → 只能用 `DNAT`，且必须开 `route_localnet`
+
+**核验**：
+
+- 首页/分类/搜索/详情/播放清单，与 Node 版输出**逐字一致**（连源站那两个粘连的片名都一样）
+- 三个源首页：fofoys 35 条、piaoys 65 条、xcyycn 122 条
+- 批量详情（首页 35 个 id）命中索引 17-22ms
+- 封面 `/img?u=` 正常回 JPEG；播放清单 200 且相对路径已绝对化
+- **关掉电脑 8787 服务后电视重启，仍完整可用**
+- 电视重启后进程自动拉起（root，PID 稳定）、iptables 规则自动恢复
 
 ## v1.3.0 — 2026-11-05
 

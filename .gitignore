@@ -17,3 +17,9 @@ __pycache__/
 
 # 局域网服务日志
 server.log
+
+# Go 构建产物（源码在 tvgo/，二进制按需自行编译，见 tvgo/README.md）
+tvgo/tvbox44.exe
+tvgo/tvbox44-arm
+tvgo/tvgo
+tvgo/go-test.log
