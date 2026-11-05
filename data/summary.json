@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-05T11:00:55.809Z",
+  "generatedAt": "2026-11-05T11:10:33.253Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 84281,
+  "durationMs": 138754,
   "sites": [
     {
       "site": "fofoys",
@@ -34,12 +34,13 @@
       "home": 119,
       "categories": 266,
       "search": 10,
-      "detail": 1,
-      "play": "https://svip.xgplay20.com/2026-11-02/51768_6_NEvJBGqfZPRTLNyf/index.m3u8",
+      "detail": 0,
+      "play": "",
       "errors": [
-        "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86"
+        "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86",
+        "sample: HTTP 522 https://www.ixcyy.tv/d-179359.html"
       ],
-      "error": "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86"
+      "error": "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86 | sample: HTTP 522 https://www.ixcyy.tv/d-179359.html"
     }
   ]
 }
