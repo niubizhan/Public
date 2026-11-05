@@ -31,7 +31,7 @@ XCYYCN_TYPES = [("1", "电影"), ("2", "电视剧"), ("3", "综艺"), ("4", "动
 
 FF_BASE = "https://www.fofoys.com"
 PY_BASE = "https://www.piaoys.com"
-XY_BASE = "https://www.xcyycn.cc"
+XY_BASE = "https://www.ixcyy.tv"
 
 FF_RE = re.compile(r'<a[^>]*href="/(tvseries|film|anime|varietyshow|shortplay)/(\d+)"[^>]*>')
 

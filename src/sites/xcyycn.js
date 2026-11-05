@@ -1,5 +1,5 @@
 /**
- * 星辰影院 https://www.xcyycn.cc/
+ * 星辰影院 https://www.ixcyy.tv/（原 www.xcyycn.cc，2026-11 起 301 到新域名）
  *
  * 站点形态：苹果 CMS V10（shoutu46 模板），服务端渲染 HTML
  *   分类   /v/{1..5}.html  第 N 页为 /v/{type}-{N}.html
@@ -10,7 +10,7 @@
 
 import { fetchText, stripTags, extractBalanced, absUrl } from '../util.js';
 
-const BASE = 'https://www.xcyycn.cc';
+const BASE = 'https://www.ixcyy.tv';
 
 export const TYPES = [
   { id: '1', name: '电影' },

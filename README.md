@@ -1,6 +1,6 @@
 # TVBox 4.4 零 JS 爬虫（Cloudflare Workers / Pages）
 
-把 **fofo影视（fofoys.com）**、**飘花影视（piaoys.com）**、**星辰影院（xcyycn.cc）**
+把 **fofo影视（fofoys.com）**、**飘花影视（piaoys.com）**、**星辰影院（ixcyy.tv，原 xcyycn.cc）**
 三个网站改造成 **TVBox 4.4 的 `type=4` HTTP JSON 接口**，可直接部署到
 Cloudflare Workers 或 Cloudflare Pages，全程 **零 JS 执行**（不跑浏览器、不执行目标站 JS、
 无 headless、无 `eval`/`new Function`），只做「HTTP 抓取 + 正则/字符串解析」。
@@ -189,7 +189,7 @@ npm run collect     # = node scripts/collect.mjs，3 个站点约 1 分钟
 |---|---|---|---|
 | **fofoys.com** | 全部 **403**（Cloudflare 地区封锁） | ✅ 正常 | 只能走 Worker（Cloudflare→Cloudflare 放行） |
 | **piaoys.com** | **55/55 全通** | ✅ 正常 | 直连、走 Worker 都行 |
-| **xcyycn.cc** | 时通时断，且在恶化（23/55 → 6/55；备用域 `xcyycn.tv` 0/55） | ❌ 大量 **520/522/超时** | **只能从国内 IP 采集** |
+| **ixcyy.tv**（原 `xcyycn.cc`） | 2026-11 起 `xcyycn.cc` 整站 301 到 `ixcyy.tv`；旧域名对 Cloudflare 直接 444 | ✅ 新域名 200 正常 | 云端可直接采集 |
 
 因此：
 

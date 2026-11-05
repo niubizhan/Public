@@ -25,7 +25,7 @@ SAMPLES = [
     ("xcyycn", "https://cdnv1.daquanz.com/upload/vod/20261025-1/24f608d5b647ccadc70991c2ae185560.webp"),
 ]
 SITE_HOME = {"fofoys": "https://www.fofoys.com/", "piaoys": "https://www.piaoys.com/",
-             "xcyycn": "https://www.xcyycn.cc/"}
+             "xcyycn": "https://www.ixcyy.tv/"}
 
 
 def probe(url, referer=None, timeout=20, tries=2):
