@@ -76,8 +76,18 @@ const VOD_DEFAULTS = {
   vod_plot: '0',
   vod_plot_name: '',
   vod_plot_detail: '',
-  action: '',
 };
+
+/**
+ * 绝对不能输出 action 字段（哪怕空字符串）。
+ *
+ * GridFragment 的点击回调第一句是：
+ *     if (video.action != null) { sourceViewModel.action(sourceKey, video.action); return; }
+ * 只要 action 是 ""（而不是 null），点击就会被当成「执行动作」后直接 return：
+ * 海报按确定毫无反应，详情页压根不会打开，墙上也不会发 ?ac=detail&ids= 请求。
+ * 只有 JSON 里完全没有这个键，Gson 才会给出 null，点击才会走 jumpActivity(DetailActivity)。
+ */
+const OMIT_FIELDS = ['action'];
 
 /**
  * TVBox 的 AbsJson.AbsJsonVod 里只有两个字段是 int：group_id、type_id_1。
@@ -101,6 +111,8 @@ export function normalizeVod(vod) {
     out[k] = typeof v === 'string' ? v : String(v);
   }
   for (const k of INT_FIELDS) out[k] = toInt(out[k]);
+  // action 必须缺席：值为 "" 会被 TVBox 当成「有动作」而吞掉点击，见 OMIT_FIELDS 注释
+  for (const k of OMIT_FIELDS) delete out[k];
   return out;
 }
 
