@@ -79,13 +79,28 @@ const VOD_DEFAULTS = {
   action: '',
 };
 
-/** 把适配器返回的 vod 对象补全为 TVBox 可解析的完整字段（全部转成字符串） */
+/**
+ * TVBox 的 AbsJson.AbsJsonVod 里只有两个字段是 int：group_id、type_id_1。
+ * Gson 解析 JsonTreeReader 时遇到 int 字段收到 "" 会抛 NumberFormatException，
+ * 而 SourceViewModel.sortJson() 是整段 try 包起来的——一处抛异常，
+ * 首页整个 JSON 就变成 null：分类标签全没了、只剩「主页」，列表也退化成豆瓣兜底。
+ * 所以这两个字段必须输出数字，不能是空串。
+ */
+const INT_FIELDS = ['group_id', 'type_id_1'];
+
+function toInt(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.trunc(n) : 0;
+}
+
+/** 把适配器返回的 vod 对象补全为 TVBox 可解析的完整字段（int 字段保留数字，其余转字符串） */
 export function normalizeVod(vod) {
   const out = { ...VOD_DEFAULTS };
   for (const [k, v] of Object.entries(vod || {})) {
     if (v === undefined || v === null) continue;
     out[k] = typeof v === 'string' ? v : String(v);
   }
+  for (const k of INT_FIELDS) out[k] = toInt(out[k]);
   return out;
 }
 

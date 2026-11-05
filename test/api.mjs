@@ -19,6 +19,12 @@ async function get(path) {
   return { status: res.status, body, raw: text };
 }
 
+/** 拿原始响应（不走 JSON 解析），用于校验 /v/ 播放代理吐回的 m3u8 */
+async function getRaw(path) {
+  const res = await worker.fetch(new Request(ORIGIN + path));
+  return { res, text: await res.text() };
+}
+
 let pass = 0;
 let fail = 0;
 async function step(name, fn) {
@@ -89,12 +95,24 @@ for (const c of CASES) {
     const v = body.list[0];
     assert(v.vod_name, '缺片名');
     assert(v.vod_play_from && v.vod_play_url, '缺播放字段');
-    const token = v.vod_play_url.split('$$$')[0].split('#')[0].split('$')[1];
-    assert(token, 'token 解析失败');
-    const { body: play } = await get(`/api/${c.key}?play=${encodeURIComponent(token)}&flag=test`);
-    assert(play.url && /^https?:\/\//i.test(play.url), `播放失败: ${JSON.stringify(play)}`);
-    assert.strictEqual(play.parse, 0);
-    console.log(`       播放 -> ${play.url.slice(0, 90)}`);
+
+    // type=1 站点 TVBox 不会调用 ?play=，vod_play_url 必须直接是可播地址，
+    // 且要能命中 DefaultConfig.isVideoFormat 的 .m3u8 正则（否则会退化成 WebView 嗅探）。
+    const first = v.vod_play_url.split('$$$')[0].split('#')[0];
+    const target = first.slice(first.indexOf('$') + 1);
+    assert(/^https?:\/\//i.test(target), `播放地址不是直链: ${target}`);
+    assert(/\.m3u8(\?|$)/i.test(target), `播放地址不是 m3u8: ${target}`);
+
+    // 本机 /v/ 代理层：拉回来的清单里不能再有相对路径
+    const { res, text } = await getRaw(new URL(target).pathname + new URL(target).search);
+    assert.strictEqual(res.status, 200, `播放代理返回 ${res.status}`);
+    assert(text.includes('#EXTM3U'), '不是合法 m3u8');
+    const rel = text
+      .split(/\r?\n/)
+      .filter((l) => l.trim() && !l.startsWith('#'))
+      .filter((l) => !/^https?:\/\//i.test(l.trim()));
+    assert.strictEqual(rel.length, 0, `清单里仍有相对路径: ${rel[0]}`);
+    console.log(`       播放代理 -> ${target.slice(0, 78)}  (分片已绝对化)`);
   });
 
   await step(`${c.key} 搜索结果也能进详情`, async () => {
