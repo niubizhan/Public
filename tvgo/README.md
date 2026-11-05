@@ -71,25 +71,27 @@ adb shell "su 0 chmod 644 /system/etc/install-recovery.sh"
 adb shell "su 0 mount -o remount,ro /system"
 ```
 
-### 端口重定向（TVBox 配置不用改）
+### 接口地址（当前方案：TVBox 内直接填 127.0.0.1）
 
-TVBox 的接口地址存在 Hawk 里，AES 加密，改不了文件；而它的推送服务
-`POST :9978/action?do=api&url=...` 在源码里只处理 `do=refresh&type=danmaku`，
-其他一律返回 `ok` 然后什么都不做——所以那条路是走不通的（之前以为改成功了，其实是假象）。
+**正确做法**：在 TVBox 的「设置 → 数据源 / 接口」里把接口地址改成
+`http://127.0.0.1:8787/`，直连本机服务。这是唯一干净的方式，也是当前线上状态。
 
-改用一条 DNAT 规则，在电视内部把旧地址导到本机：
-
-```bash
-su 0 sh -c 'echo 1 > /proc/sys/net/ipv4/conf/all/route_localnet; echo 1 > /proc/sys/net/ipv4/conf/lo/route_localnet'
-su 0 iptables -t nat -A OUTPUT -d 192.168.5.12/32 -p tcp --dport 8787 \
-    -j DNAT --to-destination 127.0.0.1:8787
-```
-
-`route_localnet` 必须开，否则内核直接丢弃 DNAT 到 127.0.0.1 的包。
-`REDIRECT` 目标在这台机器的内核上不可用（`No chain/target/match by that name`），只能用 `DNAT`。
-
-`boot-tvbox.sh` 每次开机都会重装这条规则。等哪天在 TVBox 设置里把地址改成
-`http://127.0.0.1:8787/`，这条规则就可以删了。
+> v1.4.0 曾经用 DNAT 兜底：因为 TVBox 的接口地址存在 Hawk2.xml（AES 加密）里，
+> 改不动文件，而推送服务 `POST :9978/action?do=api&url=...` 在源码里只处理
+> `do=refresh&type=danmaku`，其他一律返回 `ok` 却什么都不做（当时以为改成功了，
+> 核对 Hawk2.xml 的 mtime 才发现是假象）。于是在电视内部加了一条
+> `iptables -t nat -A OUTPUT -d 192.168.5.12/32 -p tcp --dport 8787 -j DNAT
+> --to-destination 127.0.0.1:8787`，让旧地址指向本机。
+>
+> **v1.5.0 起这条规则已删除**：用户在应用内把地址改成 `127.0.0.1:8787` 后不再需要，
+> `boot-tvbox.sh` 也改成开机顺手清理残留规则。若旧规则还在，手动删：
+>
+> ```bash
+> adb shell "su 0 iptables -t nat -D OUTPUT -d 192.168.5.12/32 -p tcp --dport 8787 -j DNAT --to-destination 127.0.0.1:8787"
+> adb shell "su 0 sh -c 'echo 0 > /proc/sys/net/ipv4/conf/all/route_localnet; echo 0 > /proc/sys/net/ipv4/conf/lo/route_localnet'"
+> ```
+>
+> 删完用 `su 0 iptables -t nat -L OUTPUT -n` 确认链为空即可，不需要重启服务。
 
 ## 运行时行为
 
@@ -119,7 +121,8 @@ adb shell "cat /data/local/tmp/tvbox.log"
    —— 脚本里只能用 `ps | grep` + shell 分词（`set -- $LINE`）取 PID。
 4. **没有 `nohup` / `setsid`** —— `adb shell` 退出会带走同会话子进程，
    所以必须在 init 的 service 里双 fork（`( script & )`）才活得下来。
-5. **内核对 netfilter 支持不全** —— `REDIRECT` 不可用，只能 `DNAT`。
+5. **内核对 netfilter 支持不全** —— `REDIRECT` 目标不可用，只能 `DNAT`
+   （v1.4.0 的地址兜底方案用过，v1.5.0 已改为 TVBox 内直填 `127.0.0.1`，不再需要）。
 6. **时间戳**：Go 日志输出的时区与系统 `date` 不一致（进程拿的是 UTC），
    对比日志和截图时间时要注意差 8 小时。
 
