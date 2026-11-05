@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-05T11:10:33.253Z",
+  "generatedAt": "2026-11-05T11:55:42.327Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 138754,
+  "durationMs": 81469,
   "sites": [
     {
       "site": "fofoys",
@@ -19,7 +19,7 @@
       "site": "piaoys",
       "name": "飘花影视",
       "mode": "remote",
-      "home": 66,
+      "home": 65,
       "categories": 378,
       "search": 43,
       "detail": 1,
@@ -31,16 +31,15 @@
       "site": "xcyycn",
       "name": "星辰影院",
       "mode": "remote",
-      "home": 119,
+      "home": 121,
       "categories": 266,
       "search": 10,
-      "detail": 0,
-      "play": "",
+      "detail": 1,
+      "play": "https://svip.xgplay20.com/2026-11-02/51768_6_NEvJBGqfZPRTLNyf/index.m3u8",
       "errors": [
-        "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86",
-        "sample: HTTP 522 https://www.ixcyy.tv/d-179359.html"
+        "search-斗罗大陆: The operation was aborted"
       ],
-      "error": "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86 | sample: HTTP 522 https://www.ixcyy.tv/d-179359.html"
+      "error": "search-斗罗大陆: The operation was aborted"
     }
   ]
 }
