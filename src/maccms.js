@@ -115,6 +115,24 @@ export function homeEnvelope(classes, list) {
   };
 }
 
+/**
+ * type=1（maccms 标准）首页信封
+ *
+ * TVBox 的 type=1 首页请求是 `{api}?ac=detail`（不带 t/ids/wd），
+ * 解析器 AbsJson 同时读 class（分类导航）和 list（推荐位）；
+ * 缺 class 时首页只剩「主页」一个标签，分类点不进去。
+ * 真正的 maccms API 也是在 detail 响应里带 class，这里对齐该行为。
+ */
+export function homeListEnvelope(classes, list, { page = 1, pagecount = 1 } = {}) {
+  const env = listEnvelope(list, { page, pagecount, total: (list || []).length });
+  env.class = (classes || []).map((c) => ({
+    type_id: String(c.type_id ?? c.id ?? ''),
+    type_name: String(c.type_name ?? c.name ?? ''),
+    type_flag: c.type_flag || '',
+  }));
+  return env;
+}
+
 /** 播放解析响应（normalizePlayerResult 会读取 url / parse / header / playUrl） */
 export function playEnvelope(url, { header = {}, flag = '', playUrl = '' } = {}) {
   return {

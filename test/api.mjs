@@ -37,7 +37,7 @@ await step('GET / -> TVBox 4.4 配置', async () => {
   assert.strictEqual(status, 200);
   assert(Array.isArray(body.sites) && body.sites.length === 3, 'sites 数量不对');
   for (const s of body.sites) {
-    assert.strictEqual(s.type, 4, `${s.key} type 应为 4`);
+    assert.strictEqual(s.type, 1, `${s.key} type 应为 1（maccms 标准）`);
     assert(s.api.startsWith(`${ORIGIN}/api/`), `${s.key} api 地址不对: ${s.api}`);
     assert.strictEqual(s.searchable, 1);
     assert.strictEqual(s.quickSearch, 1);
@@ -57,8 +57,8 @@ const CASES = [
 ];
 
 for (const c of CASES) {
-  await step(`${c.key} 首页 ?filter=true`, async () => {
-    const { body } = await get(`/api/${c.key}?filter=true`);
+  await step(`${c.key} 首页 ?ac=detail`, async () => {
+    const { body } = await get(`/api/${c.key}?ac=detail`);
     assert(Array.isArray(body.class) && body.class.length >= 3, 'class 缺失');
     for (const c of body.class) {
       assert(c.type_id && c.type_id !== 'undefined', `class.type_id 异常: ${JSON.stringify(c)}`);

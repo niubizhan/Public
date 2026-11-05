@@ -5,7 +5,7 @@
     {
       "key": "fofoys",
       "name": "fofo影视",
-      "type": 4,
+      "type": 1,
       "api": "https://tvbox44-crawler.pages.dev/api/fofoys",
       "searchable": 1,
       "quickSearch": 1,
@@ -17,7 +17,7 @@
     {
       "key": "piaoys",
       "name": "飘花影视",
-      "type": 4,
+      "type": 1,
       "api": "https://tvbox44-crawler.pages.dev/api/piaoys",
       "searchable": 1,
       "quickSearch": 1,
@@ -29,7 +29,7 @@
     {
       "key": "xcyycn",
       "name": "星辰影院",
-      "type": 4,
+      "type": 1,
       "api": "https://tvbox44-crawler.pages.dev/api/xcyycn",
       "searchable": 1,
       "quickSearch": 1,

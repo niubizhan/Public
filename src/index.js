@@ -17,7 +17,7 @@
  */
 
 import { SITES, getSite } from './sites/index.js';
-import { listEnvelope, homeEnvelope, playEnvelope, emptyList } from './maccms.js';
+import { listEnvelope, homeEnvelope, homeListEnvelope, playEnvelope, emptyList } from './maccms.js';
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -47,7 +47,7 @@ function buildConfig(origin) {
     sites: SITES.map((s) => ({
       key: s.key,
       name: s.name,
-      type: 4,
+      type: 1,
       api: `${origin}/api/${s.key}`,
       searchable: 1,
       quickSearch: 1,
@@ -69,7 +69,7 @@ function helpDoc(origin) {
     config: `${origin}/`,
     sites: SITES.map((s) => ({ key: s.key, name: s.name, api: `${origin}/api/${s.key}` })),
     endpoints: {
-      '首页(分类导航+推荐)': 'GET {api}?filter=true',
+      '首页(分类导航+推荐)': 'GET {api}?ac=detail   （type=1 标准；type=4 用 ?filter=true）',
       分类: 'GET {api}?ac=detail&t={type_id}&pg={page}',
       搜索: 'GET {api}?wd={关键词}&ac=detail&quick=true',
       详情: 'GET {api}?ac=detail&ids={vod_id}',
@@ -125,8 +125,17 @@ async function dispatch(site, params) {
     }
   }
 
-  // 4) 分类
+  // 4) 分类 / type=1 首页
   if (ac === 'detail') {
+    // maccms 标准：首页也是 ac=detail，只是不带 t。此时返回 class + list。
+    if (!params.get('t')) {
+      try {
+        const r = await site.home();
+        return json(homeListEnvelope(r.classes, r.list));
+      } catch (e) {
+        return json(withError(homeListEnvelope([], []), e));
+      }
+    }
     try {
       const r = await site.category(params.get('t') || '', pg);
       return json(
