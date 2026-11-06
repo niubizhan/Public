@@ -7,7 +7,11 @@ package main
 //   GET /api                  -> 接口自述
 //   GET /api/{site}           -> 业务接口（首页/分类/搜索/详情/播放）
 //   GET /img?u=               -> 封面图代理
-//   GET /v/{site}/index.m3u8  -> 播放清单代理（把相对路径绝对化）
+//   GET /v/{site}/index.m3u8  -> 播放清单代理（master 改走本地 /p/）
+//   GET /p/{sid}/index.m3u8   -> 媒体清单原样返回（分片相对路径自动落到 /p/）
+//   GET /p/{sid}/{file}.ts    -> 分片代理：超时重试 + 预取 + 完整 Content-Length
+//   GET /seg/list | /on | /off -> 切换清单代理模式（默认 off：完全直连）
+//   GET /player/exo | /ijk      -> 切换下发的播放器类型（默认 -1 跟随设置页）
 //   GET /health               -> 健康检查
 //
 // TVBox 4.4 type=1 请求参数（见 TVBoxOS SourceViewModel.java）：
@@ -34,7 +38,7 @@ import (
 	"time"
 )
 
-const appVersion = "1.1.0"
+const appVersion = "1.7.0"
 
 // 播放器/上游 UA：取 m3u8 时代入，避免部分 CDN 拒绝空 UA。
 const playerUA = "Mozilla/5.0 (Linux; Android 12; TVBox) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
@@ -352,16 +356,26 @@ func handlePlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// master 清单只有一行变体地址，真正的分片清单是播放器直连源站取的。
+	// 非 off 模式时把这一行改成本地短路径：清单由 Go 代取并缓存（源站慢时
+	// 这份 58KB 要 20 秒），同时不重演上次「清单 58KB -> 117KB、每行 200
+	// 字符 base64」把 IJK 卡在 FIND_STREAM_INFO 的问题。详见 segproxy.go。
+	if segEnabled() && strings.Contains(html, "#EXT-X-STREAM-INF") {
+		out, n := localizeMaster(html, real, reqOrigin(r))
+		if n > 0 {
+			w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Cache-Control", "no-store")
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, out)
+			return
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
-	// 分片仍然直连源站。
-	//
-	// 试过把分片也改成走 /lv 本地代理（连接复用 + 超时重试），结果 IJK 在
-	// FIND_STREAM_INFO 之后就停住不起播 —— 清单从 58KB 涨到 117KB，且每个
-	// 分片 URL 变成 200 多字符的 base64，这台电视的 ffmpeg 吃不消。
-	// 所以保持只绝对化、不转发字节。
 	_, _ = io.WriteString(w, absolutize(html, real))
 }
 
@@ -584,6 +598,10 @@ func buildConfig(origin string) map[string]interface{} {
 			"filterable":  0,
 			"changeable":  1,
 			"timeout":     20,
+			// 站点级播放器类型：2=ExoPlayer。IJK 在这台 Android 4.4 电视上
+			// 读 https 分片无读超时，源站掐连接就永久卡在广告帧；Exo 走 Java
+			// HTTP 栈有超时和重试。GET /player/ijk 可立刻改回跟随设置页。
+			"playerType":  cfgPlayerType(),
 			"style":       "",
 		})
 	}
@@ -676,7 +694,10 @@ func main() {
 			writeJSON(lw, helpDoc(origin), 200)
 
 		case path == "/health":
-			writeJSON(lw, map[string]interface{}{"ok": true, "version": appVersion, "uptime": time.Since(startAt).String()}, 200)
+			writeJSON(lw, map[string]interface{}{
+				"ok": true, "version": appVersion, "uptime": time.Since(startAt).String(),
+				"player_type": cfgPlayerType(), "seg_mode": segMode(),
+			}, 200)
 
 		case path == "/img":
 			handleImage(lw, r)
@@ -686,6 +707,15 @@ func main() {
 
 		case path == "/lv":
 			handleLivePlaylist(lw, r)
+
+		case strings.HasPrefix(path, "/seg"):
+			handleSegCtl(lw, r, path)
+
+		case strings.HasPrefix(path, "/player/"):
+			handlePlayerCtl(lw, r, path)
+
+		case strings.HasPrefix(path, "/p/"):
+			handleSeg(lw, r, path)
 
 		case strings.HasPrefix(path, "/v/"):
 			handlePlaylist(lw, r)

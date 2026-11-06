@@ -2,6 +2,53 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v1.7.0 — 2026-11-06
+
+### 新增：点播清单/分片代理 `tvgo/segproxy.go`（默认关闭，实验能力）
+
+针对「播到广告帧后画面冻住、声音还在」继续做分片预取，完整实现并实机验证，
+**结论是这条路在点播 HLS 上走不通**，因此默认仍是 v1.6.1 的完全直连。
+
+**实现**（`tvgo/segproxy.go`）：
+
+- 关键设计是**不改写分片行**：`/v/` 拿到的其实只是 146 字节 master，
+  真正的 58KB 媒体清单是播放器直连源站取的。把 master 的变体行改成本地
+  短路径 `/p/<sid>/index.m3u8` 后，**媒体清单原文原样返回**，清单里的相对
+  分片路径会被播放器自然拼成 `/p/<sid>/xxx.ts`，Go 按文件名查回源站绝对
+  地址。清单大小、每行长度、所有 `#EXT` 标签都不变，避免了 v1.6.1 记下的
+  「58KB→117KB + 200 字符 base64 URL」问题。
+- 三种模式：`off`（直连，默认）/ `list`（清单代取+缓存、分片绝对化直连）/
+  `full`（清单和分片都走 localhost）。运行时可切：
+  `GET /seg/off | /seg/list | /seg/on`；`GET /health` 会回报当前模式。
+- `full` 的分片代理带：预取窗口（向后 4 个、向前留 2 个）、并发回源上限 3、
+  上游 30 秒超时 + 失败重试、完整 `Content-Length` / `Content-Type`、
+  VOD 清单缓存 2 小时、流 30 分钟 TTL 回收。响应实测 1~4ms 命中预取
+  （回源要 2.5~5 秒），`Content-Length: 896572` 正确。
+- 站点配置新增 `playerType` 下发与 `GET /player/exo | /ijk` 开关：
+  依据 `ApiConfig.java:776 → PlayFragment.java:1382`，源配置可指定站点级
+  播放器类型（1=IJK / 2=Exo / -1=跟随设置页）。
+
+**实机结论（三条都验证过，均放弃为默认）**：
+
+1. `full`：HTTP 层全部通过，但 IJK 起播停在 `FFP_MSG_FIND_STREAM_INFO`，
+   读 3~7 个分片后不再请求、不出画面。长 URL(`/lv`) 与短 URL(`/p/`) 都一样。
+   直播 `/lv` 能播是因为 live 与 vod 的 ijk option 不同
+   （`max_cached_duration` / `infbuf` / `threads`）。
+2. `playerType=2`（ExoPlayer 2.19.1，想用 Java HTTP 栈的读超时绕开 ffmpeg）：
+   Exo 初始化正常，但 8 秒只下 70KB、一直黑屏转圈。且 `VodInfo.playerCfg`
+   会记住历史里的 `pl`，配置下发对看过的剧不生效。
+3. `list`：清单代取 1.3 秒（源站慢时要 20 秒）、分片绝对直连，HTTP 层验证
+   通过，但实机起播仍未确认出画面。
+
+**因此默认 `off`**：不把未验证的行为强加给电视，`/v/` 输出与 v1.6.1 逐字
+一致（源站绝对地址），`playerType` 默认 -1 跟随设置页，零回归风险。
+顺带独立测过源站：`v.lzcdn27.com`（线路6）1.5 秒 / 626KB、
+`vip.dytt-tvs.com`（线路3）分片 4.9~8.8 秒 / 896KB，均可达，
+卡住不是源站整体故障。
+
+核验：`/health` 返回 `{"player_type":-1,"seg_mode":"off","version":"1.7.0"}`；
+`/v/` 恢复输出源站绝对 https；服务单进程；TVBox 重启后首页正常。
+
 ## v1.6.1 — 2026-11-06
 
 ### 修复：`/lv` 转发分片时先整段读进内存，慢且会被 4MB 上限截断

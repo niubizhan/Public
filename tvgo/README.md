@@ -152,6 +152,44 @@ http://127.0.0.1:8787/live.txt
 adb shell "cat /data/local/tmp/tvbox.log"
 ```
 
+## 点播清单 / 分片代理（v1.7.0，默认关闭）
+
+针对「播到广告帧后画面冻住、声音还在」做的实验能力，**默认 `off`**，
+`/v/` 输出与 v1.6.1 逐字一致（源站绝对地址），不影响正常看电视。
+
+| 模式 | 行为 | 状态 |
+|---|---|---|
+| `off` | 完全直连（默认） | v1.6.1 行为，零回归 |
+| `list` | 清单由 Go 代取+缓存（1.3 秒），分片绝对化后仍直连源站 | HTTP 层验证通过，起播未确认 |
+| `full` | 清单与分片都走 localhost，带预取/超时/重试 | **实机起播不通** |
+
+运行时切换（无需重新编译 / 重启服务）：
+
+```bash
+curl "http://127.0.0.1:8787/seg/list"   # 开清单代取
+curl "http://127.0.0.1:8787/seg/off"    # 退回直连
+curl "http://127.0.0.1:8787/health"     # 看 seg_mode / player_type
+```
+
+`full` 的设计要点是**不改写分片行**：把 master 的变体行改成本地短路径
+`/p/<sid>/index.m3u8`，媒体清单原文原样返回，清单里的相对分片路径会被
+播放器自然拼到 `/p/<sid>/` 上，Go 按文件名查回源站地址。这样清单大小、
+每行长度和所有 `#EXT` 标签都不变。分片带完整 `Content-Length`、预取窗口
+（后 4 前 2）、并发回源上限 3、上游 30 秒超时 + 重试；实测预取命中 1~4ms
+（回源要 2.5~5 秒）。
+
+**为什么没做成默认**：三种模式在实机上都没能确认出画面——
+`full` 下 IJK 停在 `FFP_MSG_FIND_STREAM_INFO`、读 3~7 个分片后不再请求；
+`playerType=2`（ExoPlayer 2.19.1，想用 Java HTTP 栈的读超时绕开 ffmpeg）
+初始化正常但 8 秒只下 70KB；`list` 同样停在黑屏转圈。独立测过源站可达
+（`v.lzcdn27.com` 1.5 秒 / 626KB），不是源站整体故障。详见 `CHANGELOG.md`
+v1.7.0。
+
+站点配置另支持下发 `playerType`（1=IJK / 2=Exo / -1=跟随设置页，见
+`ApiConfig.java:776 → PlayFragment.java:1382`），默认 -1。
+`GET /player/exo | /ijk` 可临时切换。注意 `VodInfo.playerCfg` 会记住历史
+里的 `pl`，配置下发对已看过的剧不生效，要在播放页的「播放器」按钮切。
+
 ## Android 4.4 上踩到的坑
 
 1. **没有 `/etc/resolv.conf`** —— Go 的纯 Go 解析器直接失败。
