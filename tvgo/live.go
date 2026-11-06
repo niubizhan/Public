@@ -271,9 +271,23 @@ func handleLivePlaylist(w http.ResponseWriter, r *http.Request) {
 	}
 	forceProxy := q.Get("p") == "1"
 
-	resp, err := liveGet(raw, 12*time.Second)
+	// 先按地址后缀判断是清单还是分片：分片不能整段读进内存再吐，
+	// 那样既慢（要等最后一个字节）又会被 4MB 上限截断。
+	lower := strings.ToLower(raw)
+	looksList := strings.Contains(lower, ".m3u8") || strings.Contains(lower, "playlist")
+
+	timeout := 12 * time.Second
+	if !looksList {
+		timeout = 30 * time.Second
+	}
+
+	resp, err := liveGet(raw, timeout)
+	if err != nil && !looksList {
+		// 分片允许重来一次：源站偶发掐连接 / 502
+		resp, err = liveGet(raw, timeout)
+	}
 	if err != nil {
-		log.Printf("[lv] 取清单失败 %s: %v", shortURL(raw), err)
+		log.Printf("[lv] 取上游失败 %s: %v", shortURL(raw), err)
 		http.Error(w, "upstream error", http.StatusBadGateway)
 		return
 	}
@@ -285,11 +299,24 @@ func handleLivePlaylist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ct := strings.ToLower(resp.Header.Get("Content-Type"))
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
-	txt := string(body)
 
-	// 不是清单就当作分片/文件原样透传
-	if !strings.Contains(txt, "#EXTM3U") {
+	if looksList || strings.Contains(ct, "mpegurl") {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 8<<20))
+		txt := string(body)
+		if strings.Contains(txt, "#EXTM3U") {
+			if resp.StatusCode != http.StatusOK {
+				http.Error(w, "upstream status "+resp.Status, http.StatusBadGateway)
+				return
+			}
+			out := rewriteLivePlaylist(txt, finalURL, reqOrigin(r), forceProxy)
+			w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+			w.Header().Set("Cache-Control", "no-store")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, out)
+			return
+		}
+		// 声称是清单、内容却不是：按普通文件透传
 		if ct == "" {
 			ct = "application/octet-stream"
 		}
@@ -300,15 +327,19 @@ func handleLivePlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		http.Error(w, "upstream status "+resp.Status, http.StatusBadGateway)
-		return
+	// 分片：流式转发，边收边发；Content-Length 原样透给播放器。
+	// 播放器知道确切边界，才不会因为一条半死的连接一直等下去。
+	if cl := resp.Header.Get("Content-Length"); cl != "" {
+		w.Header().Set("Content-Length", cl)
 	}
-
-	out := rewriteLivePlaylist(txt, finalURL, reqOrigin(r), forceProxy)
-	w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+	if ct == "" {
+		ct = "application/octet-stream"
+	}
+	w.Header().Set("Content-Type", ct)
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(http.StatusOK)
-	_, _ = io.WriteString(w, out)
+	w.WriteHeader(resp.StatusCode)
+	if _, err := io.Copy(w, resp.Body); err != nil {
+		log.Printf("[lv] 分片转发中断 %s: %v", shortURL(raw), err)
+	}
 }

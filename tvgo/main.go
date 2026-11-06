@@ -356,6 +356,12 @@ func handlePlaylist(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
+	// 分片仍然直连源站。
+	//
+	// 试过把分片也改成走 /lv 本地代理（连接复用 + 超时重试），结果 IJK 在
+	// FIND_STREAM_INFO 之后就停住不起播 —— 清单从 58KB 涨到 117KB，且每个
+	// 分片 URL 变成 200 多字符的 base64，这台电视的 ffmpeg 吃不消。
+	// 所以保持只绝对化、不转发字节。
 	_, _ = io.WriteString(w, absolutize(html, real))
 }
 
