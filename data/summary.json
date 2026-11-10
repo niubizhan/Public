@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-11-10T01:04:35.808Z",
+  "generatedAt": "2026-11-10T22:44:27.189Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 268647,
+  "durationMs": 216583,
   "sites": [
     {
       "site": "fofoys",
       "name": "fofo影视",
       "mode": "remote",
       "home": 35,
-      "categories": 300,
+      "categories": 299,
       "search": 40,
       "detail": 1,
       "play": "https://vip.dytt-tvs.com/20261105/44126_7e94cbdb/index.m3u8",
@@ -19,8 +19,8 @@
       "site": "piaoys",
       "name": "飘花影视",
       "mode": "remote",
-      "home": 68,
-      "categories": 374,
+      "home": 69,
+      "categories": 375,
       "search": 43,
       "detail": 1,
       "play": "https://v6.rstu6.com/202311/15/cpAkukr0Dc1/video/index.m3u8",
@@ -31,18 +31,18 @@
       "site": "xcyycn",
       "name": "星辰影院",
       "mode": "remote",
-      "home": 119,
-      "categories": 266,
+      "home": 0,
+      "categories": 0,
       "search": 0,
       "detail": 0,
       "play": "",
       "errors": [
-        "search-庆余年: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E5%BA%86%E4%BD%99%E5%B9%B4",
-        "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86",
-        "sample: HTTP 522 https://www.ixcyy.tv/v/1.html",
+        "home: HTTP 522 https://www.ixcyy.tv/",
+        "category-1: The operation was aborted",
+        "category-2: HTTP 522 https://www.ixcyy.tv/v/2.html",
         "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
       ],
-      "error": "search-庆余年: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E5%BA%86%E4%BD%99%E5%B9%B4 | search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86 | sample: HTTP 522 https://www.ixcyy.tv/v/1.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "error": "home: HTTP 522 https://www.ixcyy.tv/ | category-1: The operation was aborted | category-2: HTTP 522 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
