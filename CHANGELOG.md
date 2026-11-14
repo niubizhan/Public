@@ -2,6 +2,42 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v2.0.2 — 2026-11-14
+
+### 编译工具链升级 Go 1.22.5 → Go 1.27.4，重新部署到电视（源码零改动）
+
+用户指定改用 `C:\Go\bin\go.exe`（`go1.27.4 windows/amd64`）重新编译并部署。
+**本轮 `spider-go/` 源码一行未改**，只更换编译器并替换电视上的可执行文件；
+依赖仍锁 `goquery v1.9.2` / `cascadia v1.3.2` / `x/net v0.24.0`，
+复用本机 `_gopath` 模块缓存，编译设 `GOPROXY=off` 全程离线。
+
+- 构建参数：`GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=0 GOTOOLCHAIN=local`
+  `-ldflags="-s -w"`；产物 `tvbox44-arm` 8,126,624 B（旧版 6,422,680 B），
+  MD5 `42072af9251be8a02e6b26841d604148`，ELF32 ARM(e_machine=40) 静态二进制。
+  构建元数据含 `DefaultGODEBUG`（Go 1.27 新引入），无需改代码即兼容。
+- 旧版备份：本机 `tvbox44-arm.go1225.bak`、电视 `/data/local/tmp/tvbox44.go1225.bak`
+  （MD5 `5263adfd823356c5656519dcdc0a51f3`），可随时回滚。
+- 电视 IP 由 `192.168.5.19` 换成 **`192.168.5.21`**；接口地址仍是
+  `http://127.0.0.1:8787/`（本机回环），不受 IP 变更影响，无需重填配置。
+
+部署踩坑（重要）：源站由 root 运行，普通 adb shell 的 `kill` 杀不掉，
+`cp` 覆盖会报 `Text file busy`；必须 `su 0 kill <pid>` 后，在开机看门狗
+`boot-tvbox.sh` 的 5 秒重启窗口内用 `su 0 cp` 覆盖并 `chmod 755`，
+看门狗随后自动用新二进制拉起服务（`trap "" HUP` 双 fork 进程 PPID=1 保持不变）。
+另：本机 toolchain 默认 `GOMODCACHE=C:\GOPATH\pkg\mod`，需显式
+`GOPATH=<工作区>/_gopath` 才能命中已有依赖缓存。
+
+核验（电视 `192.168.5.21`，经 `adb forward` 访问 127.0.0.1:8787）：
+- `/health` 200，`version=2.0.1-goquery`、`sites=2`、`proxy=""`、resolver `192.168.5.1`，
+  uptime 重新计时证明是新进程（PID 26512，父进程为看门狗 897）。
+- `/` 配置 2 站点；ixcyy 首页 118 条、fofoys 首页 35 条；
+  搜索「光阴之外」1 条；详情 `ids=152289` 含线路；播放清单 200 且返回合法
+  `#EXTM3U` master（含真实外站直链）。外网 HTTPS 抓取正常 → Go 1.27 TLS 栈在
+  Android 4.4 / 内核 3.10 上工作正常。
+- 电视端 `md5 /data/local/tmp/tvbox44` 与本机产物一致；8787 监听正常；
+  开机钩子 `/system/etc/install-recovery.sh` 未改动，重启后仍自启新版本。
+- 未做加密片源实机播放验证（HLS AES-128 密钥代理逻辑源码未改，v2.0.1 已验证过）。
+
 ## v2.0.1 — 2026-11-14
 
 ### 修复 HLS AES-128 密钥 404 导致加密片源无法播放
