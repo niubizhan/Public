@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-const appVersion = "2.0.1-goquery"
+const appVersion = "2.2.0-autospeed"
 
 var vodDefaults = map[string]string{
 	"vod_id": "", "type_id": "", "type_name": "", "vod_name": "", "vod_sub": "",
@@ -151,6 +151,8 @@ func rewritePlayURLs(item *VodItem, origin, siteKey string) {
 	froms := strings.Split(item.VodPlayFrom, "$$$")
 	groups := strings.Split(item.VodPlayURL, "$$$")
 	out := make([]string, 0, len(groups))
+	// 同一集在各线路下的 token：供起播时自动测速选最快线路。
+	byEpisode := map[int][]lineOpt{}
 	for i, group := range groups {
 		flag := ""
 		if i < len(froms) {
@@ -166,9 +168,13 @@ func rewritePlayURLs(item *VodItem, origin, siteKey string) {
 			if token == "" {
 				continue
 			}
+			byEpisode[n] = append(byEpisode[n], lineOpt{flag: flag, token: token})
 			eps[n] = name + "$" + playURLFor(origin, siteKey, token, flag)
 		}
 		out = append(out, strings.Join(eps, "#"))
+	}
+	if len(groups) > 1 {
+		registerLineOptions(siteKey, item.VodID, byEpisode)
 	}
 	item.VodPlayURL = strings.Join(out, "$$$")
 }

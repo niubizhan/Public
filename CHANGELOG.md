@@ -2,6 +2,86 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v2.2.0 — 2026-11-14
+
+### 并发预取分片 + 线路自动测速选最快
+
+v2.1.1 解决了「卡死」，但慢 CDN 顺序下载每片 25~38s，播放器缓冲永远追不上。
+本版加两项能力，`spider-go/main.go`、`spider-go/tvbox.go`。
+
+- **并发预取缓存**：`handleProxyPlaylist` 返回子清单时登记 session，
+  后台并发（6 路）预取后续 8 个分片到内存；`seg?u=...&p=<pid>` 命中即秒回，
+  支持 Range/206。缓存上限 32 片、消费即释放，一次只保留一个活跃 session，
+  切换片源时 `context.Cancel` 取消旧下载，避免吃光电视内存。
+- **线路自动测速**：详情返回时 `rewritePlayURLs` 把「同一集在各线路下的
+  token」登记成组（`registerLineOptions`）；起播时 `chooseLine` 并发探测最多
+  4 条线路，解析真实地址后取首分片前 64KB 计算吞吐，8 秒预算内选最快的
+  线路透明替换。结果按剧集缓存 10 分钟，换集不重复测；全部失败/超时则保持
+  TVBox 原本选中的线路。日志形如 `[speed] probed 4 lines, pick 金星20 (58 KB/s)`。
+- `appVersion`：`2.1.1-proxy` → `2.2.0-autospeed`。
+
+核验：
+- 本机自测：`pick 地球20 (62 KB/s)`；master 8.2s（含测速）；
+  285 分片带 `p`；seg0 4.9s、seg1 1.3s、seg2 2.1s（预取命中）；Range 206 正确。
+- 电视侧：`pick 金星20 (58 KB/s)`；seg0 14.6s、**seg1 0.1s**（预取命中）。
+- 实机：TVBox 重启后播放第20集，`[speed] cached pick 金星20` 命中缓存，
+  音频轨持续输出（`AudioFlinger` active track，UndFrmCnt 3.3万→9.3万），
+  无 502、无 `Source error`、无 `[seg] fail`。**网络/源站链路已完全打通**。
+- 遗留（非源站问题）：画面仍黑，`SurfaceFlinger` 报
+  `[SurfaceView] bindTextureImage ... 0x0`。当前 TVBox 用的是 ExoPlayer，
+  属 Android 4.4 上视频 Surface/解码渲染层问题，需在 TVBox 设置里把播放器
+  改为 IJK（或换回带「系统播放器」引擎的自编包）。本版未改 APK。
+
+部署：`C:\Go\bin\go.exe`(go1.27.4) 交叉编译，产物 8,192,160 B /
+MD5 `5c8f47b6c5f4a20f41ec3a7a2868016d`；电视 `/data/local/tmp/tvbox44` 已替换，
+看门狗自动拉起，health `2.2.0-autospeed`。回滚备份：
+`/data/local/tmp/tvbox44.v201.bak`(v2.0.1)、`.v210`(v2.1.0)、`.v211`(v2.1.1)。
+接口地址与开机钩子未改动。
+
+## v2.1.1 — 2026-11-14
+
+> 中间版本：全链路代理 + 流式分片修复；已被 v2.2.0 取代，记录保留供回滚参考。
+
+### HLS 全链路本地代理 + 流式分片（修复插广告后黑屏卡死）
+
+背景：电视装的 `TVBox_4.4_armeabi-v7a.apk` 没有 `rw_timeout`/`reconnect` 补丁，
+播放器（当前为 ExoPlayer）直连灰产 CDN，某个分片 connection reset 后永久卡在读流，
+表现为「插入广告后黑屏」。上游 `mixed.m3u8` 有 281 个分片、51 个
+`#EXT-X-DISCONTINUITY`（每 5 段一个，属 CDN 混切，**不是广告标记**，
+因此不做盲目的广告段剔除）。
+
+改动文件：`spider-go/main.go`、`spider-go/tvbox.go`。
+
+- 新增 `rewriteM3U8()`：master 子清单改写成 `/v/{site}/proxy.m3u8?u=`，
+  媒体分片改写成 `/v/{site}/seg?u=`，AES 密钥仍走 `enc.key?u=`
+  （保持 v2.0.1 行为）。播放器从此只连 `127.0.0.1:8787`。
+- 新增 `handleProxyPlaylist()` 递归改写子清单；`handleSegment()` 代理 TS，
+  带 UA/Referer、Range 透传、响应头阶段 3 次重试（连接重置/5xx 由 Go 吸收）。
+- **关键修正（v2.1.0 → v2.1.1）**：初版先把分片全缓冲再返回并设 20s 整体超时，
+  实测 CDN 单分片 1.5MB 在电视上要 25~29s，被误判超时，3 次重试堆到 61s
+  返回 502，Exo 直接 `ExoPlaybackException: Source error`。
+  改为流式 `io.Copy` 边下边播，超时只兜底响应头阶段，
+  `http.Server.WriteTimeout` 90s → 180s。
+- 新增 `-strip-disc` 排障开关（去掉 DISCONTINUITY，默认关闭，不改变清单语义）。
+- 成功的 `/seg` 不打 access log（一集 281 片），仅记录失败与慢分片。
+- `appVersion`：`2.0.1-goquery` → `2.1.1-proxy`（health 里可确认部署版本）。
+
+核验：
+- 本机自测：health `2.1.1-proxy`；master 无外链；281 分片全部本地化；
+  `seg` 200 / 716,280 B / `video/mp2t`；Range 206 / 1,024 B / `Content-Range` 正确。
+- 电视侧：8788 试跑后正式替换，8787 health `2.1.1-proxy`，
+  看门狗 `boot-tvbox.sh` 自动拉起（PID 25070）；实机日志
+  `[seg] slow ... 1512272 bytes 29s` 等，分片连续完整传完、无 502、无 Source error。
+- 已知限制：当前 CDN 单分片 25~29s（≈52KB/s），起播缓冲慢属于带宽问题，
+  代理不能创造带宽；卡死已消除，但慢速线路仍可能长时间转圈，建议换线路/站点。
+
+部署：仍用 `C:\Go\bin\go.exe`（go1.27.4）交叉编译
+`GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=0` + `-ldflags="-s -w"`；
+产物 8,192,160 B / MD5 `4a219461cf075d5752bff0b56bc0e0b5`。
+回滚备份：本机 `tvbox44-arm.v201.bak`（v2.0.1）、电视
+`/data/local/tmp/tvbox44.v201.bak`，另有初版代理 `/data/local/tmp/tvbox44.v210`。
+接口地址 `http://127.0.0.1:8787/` 与开机钩子均未改动。
+
 ## v2.0.2 — 2026-11-14
 
 ### 编译工具链升级 Go 1.22.5 → Go 1.27.4，重新部署到电视（源码零改动）
