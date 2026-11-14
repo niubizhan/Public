@@ -1,0 +1,19 @@
+#!/system/bin/sh
+
+# --- tvbox44-crawler: start local TVBox source server ---
+# double-fork to detach from this oneshot service
+( /data/local/tmp/boot-tvbox.sh & )
+
+i=0
+ret=-1
+while ( [ $ret -ne 0 ] && [ $i -lt 200 ] )
+do
+  /midbase/base/tcli db.factory.watchdog
+  let "ret = $?"
+  let "i++"
+  log -t recovery "do tcli db.factory.watchdog."
+  log -t recovery $i
+  sleep 1
+done  
+log -t recovery "finish tcli db.factory.watchdog."
+

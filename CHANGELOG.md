@@ -2,6 +2,55 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v2.0.0 — 2026-11-14
+
+### 新增 `spider-go/`：按 fongmi 爬虫规范重写的 Go 源站（双站点，goquery 解析）
+
+用户提供了一份 Go 草稿（`/spider/ixcyy` 路由 + `VodResponse`/`VodItem`/`Spider` 骨架），
+要求修复、加入 fofoys、部署到电视。草稿有 6 处跑不起来的问题，逐条修复并落到 `spider-go/`：
+
+1. `Category` / `PlayUrl` / `extractID` 只被引用未定义 → 编译失败。补全类型与工具函数，
+   `Spider` 接口补 `Key/Name/Base/HomeContent`。
+2. 草稿 URL `https://www.ixcyy.tv/vodshow/{id}--------{pg}---.html` 是通用苹果 CMS 猜测，
+   实测 ixcyy 是 shoutu46 模板：分类 `/v/{1..5}.html`、搜索 `/s.html?wd=`、
+   详情 `/d-{id}.html`、播放 `/p/{id}-{flag}-{ep}.html`。
+3. 草稿选择器 `.module-item` / `.module-item-title` 不存在；改用 goquery 解析实测结构
+   `a.public-list-exp` / `h3.slide-info-title`（ixcyy）、
+   `a[href^="/{type}/"] img[alt=video]` + `span.font-bold`（fofoys）。
+4. `http.Get` 无 UA / 无超时 → 电视上源站掐线时永久挂起。改为带 UA、全链路超时、
+   3 次退避重试、证书失败降级的 client。
+5. 草稿只有 `/spider/ixcyy` 一条路由且无配置下发。补齐 `/`（TVBox 配置 JSON，
+   sites[] 两个 type=1 源）、`/api/{site}`（保留 `/spider/{site}` 兼容别名）、
+   `/img` 图片代理、`/v/{site}/index.m3u8` 播放清单代理、`/health`。
+6. 草稿未处理 Android 4.4 两个专属坑：无 `/etc/resolv.conf`（显式问 `net.dns1`）、
+   Go 不认散装系统 CA（`//go:embed cacert.pem`）。两者补齐。
+
+**新增 fofoys.com**：Next.js SSR，列表 `/type/{type}`、搜索 `/search?q=`、
+详情内嵌 `var urlList` JS 字面量（`jsLiteralToJSON` 转换）、播放 `POST /source/ id={sid}`。
+
+**TVBox 4.4 兼容约束**（沿用 tvgo 实机经验）：不输出 `action` 键、`group_id`/`type_id_1`
+必须是数字、`limit` 为字符串 `"20"`、首页 `?ac=detail` 需同时带 `class` + `list`、
+配置不能输出 `"lives": []`。另修正「单个 id 详情命中首页卡片缓存导致没有集数」：
+单个 id 强制抓真实详情页，只有批量 ids 预取才走索引缓存。
+
+**代理口径**：`127.0.0.1:7890` 只用于本机安装 Go 环境 / 下载依赖；
+源站抓取默认直连（实测该代理对两站不可用：ixcyy EOF、fofoys 返 Cloudflare 403），
+保留 `-proxy` 开关供必要时显式启用。goquery 锁 v1.9.2（v1.13 要求 Go>=1.25，
+与本机 Go 1.22.5 不兼容）。
+
+**部署与实机验证**：
+- 交叉编译 `GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=0`，产物 6.4MB 静态二进制。
+- 推送 `/data/local/tmp/tvbox44`，监听 `127.0.0.1:8787`，进程 PPID=1 独立存活
+  （解决 adb shell 退出连带杀后台进程：启动脚本用 `trap "" HUP` + 双 fork）。
+- 恢复 `/system/etc/install-recovery.sh` 开机钩子（双 fork 拉起 `boot-tvbox.sh`
+  看门狗，755 权限；原文件已备份到 `install-recovery.sh.bak`），`/system` 已回只读。
+- 通过应用自带 9978 推送服务 **POST** `/action?do=api&url=http://127.0.0.1:8787/`
+  写入接口地址（GET 返回的 ok 是假象，`InputRequestProcess.isRequest` 只认 POST）。
+- 电视端实测：`/health` 正常；ixcyy 首页 119 条 / fofoys 首页 35 条；
+  分类 56 / 84 条；搜索 10 / 20 条；详情均拿到完整线路与集数；
+  两站播放均解出真实 m3u8 直链并回传合法 master 清单。
+- TVBox 应用日志确认已来拉配置：`GET /` 与 `GET /api/ixcyy` 均 200。
+
 ## v1.7.0 — 2026-11-06
 
 ### 新增：点播清单/分片代理 `tvgo/segproxy.go`（默认关闭，实验能力）
