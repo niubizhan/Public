@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-13T23:07:28.685Z",
+  "generatedAt": "2026-11-14T21:54:56.524Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 202394,
+  "durationMs": 227851,
   "sites": [
     {
       "site": "fofoys",
@@ -11,7 +11,7 @@
       "categories": 299,
       "search": 40,
       "detail": 1,
-      "play": "https://vip.dytt-tvs.com/20261105/44126_7e94cbdb/index.m3u8",
+      "play": "",
       "errors": [],
       "error": ""
     },
@@ -20,10 +20,10 @@
       "name": "飘花影视",
       "mode": "remote",
       "home": 70,
-      "categories": 378,
+      "categories": 374,
       "search": 0,
       "detail": 1,
-      "play": "https://v6.rstu6.com/202311/15/cpAkukr0Dc1/video/index.m3u8",
+      "play": "https://fengbao12.com/video/aiqingjiashuo/2decd4d7487b/index.m3u8",
       "errors": [],
       "error": ""
     },
@@ -32,17 +32,17 @@
       "name": "星辰影院",
       "mode": "remote",
       "home": 118,
-      "categories": 266,
+      "categories": 112,
       "search": 0,
-      "detail": 1,
+      "detail": 0,
       "play": "",
       "errors": [
-        "search-庆余年: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E5%BA%86%E4%BD%99%E5%B9%B4",
-        "search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86",
-        "sample: play returned empty url",
+        "category-3: The operation was aborted",
+        "category-4: The operation was aborted",
+        "category-5: HTTP 522 https://www.ixcyy.tv/v/5.html",
         "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
       ],
-      "error": "search-庆余年: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E5%BA%86%E4%BD%99%E5%B9%B4 | search-斗罗大陆: HTTP 522 https://www.ixcyy.tv/s.html?wd=%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86 | sample: play returned empty url | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "error": "category-3: The operation was aborted | category-4: The operation was aborted | category-5: HTTP 522 https://www.ixcyy.tv/v/5.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
