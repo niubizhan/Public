@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-const appVersion = "2.0.0-goquery"
+const appVersion = "2.0.1-goquery"
 
 var vodDefaults = map[string]string{
 	"vod_id": "", "type_id": "", "type_name": "", "vod_name": "", "vod_sub": "",
@@ -180,7 +180,7 @@ func buildConfig(origin string) map[string]interface{} {
 	for _, s := range allSpiders {
 		sites = append(sites, map[string]interface{}{
 			"key": s.Key(), "name": s.Name(), "type": 1,
-			"api": origin + "/api/" + s.Key(),
+			"api":        origin + "/api/" + s.Key(),
 			"searchable": 1, "quickSearch": 1, "filterable": 0, "changeable": 1,
 			"timeout": 20, "playerType": cfgPlayerType(), "style": "",
 		})

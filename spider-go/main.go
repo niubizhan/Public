@@ -8,6 +8,7 @@ package main
 //   GET /spider/{site}           -> 同上（保留原稿里的 /spider/ 路径，兼容自定义调用）
 //   GET /img?u=                  -> 封面图代理
 //   GET /v/{site}/index.m3u8     -> 播放清单代理（命中 isVideoFormat）
+//   GET /v/{site}/enc.key?u=...  -> HLS AES-128 密钥代理（带 UA/Referer，防 404/防盗链）
 //   GET /health                  -> 健康检查
 //
 // TVBox 4.4 type=1 请求参数（见 SourceViewModel.java）：
@@ -25,6 +26,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -46,6 +48,10 @@ var (
 	imgCache   = map[string]*imgEntry{}
 	imgOrder   []string
 	imgSem     = make(chan struct{}, 12)
+
+	// 每个站点最近一次播放清单所在目录：播放器丢掉 enc.key 的 query 时兜底用
+	lastBaseMu sync.Mutex
+	lastBase   = map[string]string{}
 
 	playerType = -1 // -1 跟随设置页；2 = ExoPlayer
 )
@@ -170,8 +176,12 @@ func handleImage(w http.ResponseWriter, r *http.Request) {
 
 // ---------------------------------------------------------------- 播放清单
 
-// absolutize m3u8 里的相对分片改成绝对地址，否则播放器会拼到本机服务上 404。
-func absolutize(text, base string) string {
+// #EXT-X-KEY / #EXT-X-MAP / #EXT-X-SESSION-KEY 里的 URI="..."
+var extKeyURI = regexp.MustCompile(`URI="([^"]*)"`)
+
+// absolutize 把 m3u8 里的相对分片改成绝对地址，并把 AES 密钥 URI 改写成本地代理。
+// 否则播放器会把 "enc.key" 拼到 127.0.0.1:8787/v/{site}/enc.key 上 -> 404 -> 解密失败黑屏。
+func absolutize(text, base, siteKey string) string {
 	bu, err := url.Parse(base)
 	if err != nil {
 		return text
@@ -179,7 +189,24 @@ func absolutize(text, base string) string {
 	lines := strings.Split(text, "\n")
 	for i, raw := range lines {
 		line := strings.TrimSpace(raw)
-		if line == "" || strings.HasPrefix(line, "#") {
+		if line == "" {
+			continue
+		}
+		if strings.HasPrefix(line, "#") {
+			if strings.HasPrefix(line, "#EXT-X-KEY") || strings.HasPrefix(line, "#EXT-X-MAP") || strings.HasPrefix(line, "#EXT-X-SESSION-KEY") {
+				lines[i] = extKeyURI.ReplaceAllStringFunc(line, func(m string) string {
+					inner := m[len(`URI="`) : len(m)-1]
+					if inner == "" {
+						return m
+					}
+					ref, e := url.Parse(inner)
+					if e != nil {
+						return m
+					}
+					abs := bu.ResolveReference(ref).String()
+					return `URI="enc.key?u=` + url.QueryEscape(abs) + `&ref=` + url.QueryEscape(base) + `"`
+				})
+			}
 			continue
 		}
 		if ref, err := url.Parse(line); err == nil {
@@ -187,6 +214,56 @@ func absolutize(text, base string) string {
 		}
 	}
 	return strings.Join(lines, "\n")
+}
+
+func lastBaseSet(k, v string) {
+	lastBaseMu.Lock()
+	defer lastBaseMu.Unlock()
+	lastBase[k] = v
+}
+
+func lastBaseGet(k string) string {
+	lastBaseMu.Lock()
+	defer lastBaseMu.Unlock()
+	return lastBase[k]
+}
+
+// handleHLSKey 代理 HLS AES-128 密钥（16 字节二进制），带站点 UA/Referer 防防盗链。
+func handleHLSKey(w http.ResponseWriter, r *http.Request, site Spider) {
+	q := r.URL.Query()
+	u := q.Get("u")
+	ref := q.Get("ref")
+	if ref == "" {
+		ref = site.Base() + "/"
+	}
+	if !isHTTPURL(u) {
+		// 兜底：播放器丢掉 query 时，用最近一次清单目录拼出密钥地址
+		if b := lastBaseGet(site.Key()); b != "" {
+			if bu, e := url.Parse(b); e == nil {
+				name := r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:]
+				if u2 := bu.ResolveReference(&url.URL{Path: name}).String(); isHTTPURL(u2) {
+					u = u2
+				}
+			}
+		}
+	}
+	if !isHTTPURL(u) {
+		http.Error(w, "key url missing", http.StatusNotFound)
+		return
+	}
+	data, _, err := fetchBinary(u, map[string]string{
+		"User-Agent": playerUA,
+		"Referer":    ref,
+	}, 12*time.Second)
+	if err != nil {
+		log.Printf("[key] fail %v", err)
+		http.Error(w, "key fetch failed", http.StatusBadGateway)
+		return
+	}
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
+	_, _ = w.Write(data)
 }
 
 func handlePlaylist(w http.ResponseWriter, r *http.Request, site Spider) {
@@ -203,6 +280,14 @@ func handlePlaylist(w http.ResponseWriter, r *http.Request, site Spider) {
 		w.WriteHeader(http.StatusFound)
 		return
 	}
+	// 记下清单所在目录，供 enc.key 兜底解析
+	if bu, e := url.Parse(real); e == nil {
+		if idx := strings.LastIndex(bu.Path, "/"); idx >= 0 {
+			bu.Path = bu.Path[:idx+1]
+		}
+		bu.RawQuery = ""
+		lastBaseSet(site.Key(), bu.String())
+	}
 	body, err := fetchText(real, fetchOpts{
 		TTL: -1, Timeout: 20 * time.Second,
 		Headers: map[string]string{"User-Agent": playerUA, "Referer": site.Base() + "/"},
@@ -215,7 +300,7 @@ func handlePlaylist(w http.ResponseWriter, r *http.Request, site Spider) {
 	w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-store")
-	_, _ = io.WriteString(w, absolutize(body, real))
+	_, _ = io.WriteString(w, absolutize(body, real, site.Key()))
 }
 
 // ---------------------------------------------------------------- 业务分发
@@ -437,11 +522,20 @@ func main() {
 		case path == "/img":
 			handleImage(lw, r)
 		case strings.HasPrefix(path, "/v/"):
-			key := strings.SplitN(strings.TrimPrefix(path, "/v/"), "/", 2)[0]
-			if site := getSpider(key); site != nil {
-				handlePlaylist(lw, r, site)
-			} else {
+			rest := strings.TrimPrefix(path, "/v/")
+			parts := strings.SplitN(rest, "/", 2)
+			key := parts[0]
+			sub := ""
+			if len(parts) > 1 {
+				sub = parts[1]
+			}
+			site := getSpider(key)
+			if site == nil {
 				http.Error(lw, "unknown site", http.StatusNotFound)
+			} else if sub == "key" || sub == "enc.key" || strings.HasSuffix(sub, ".key") {
+				handleHLSKey(lw, r, site)
+			} else {
+				handlePlaylist(lw, r, site)
 			}
 		case strings.HasPrefix(path, "/api/") || strings.HasPrefix(path, "/spider/"):
 			rest := strings.TrimPrefix(path, "/api/")

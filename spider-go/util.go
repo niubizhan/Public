@@ -28,8 +28,9 @@ func stripTags(s string) string {
 }
 
 // extractID 从详情页链接里取 id（原稿引用但未定义）。
-//   ixcyy: /d-173732.html -> 173732
-//   fofoys: /tvseries/120662 -> tvseries/120662
+//
+//	ixcyy: /d-173732.html -> 173732
+//	fofoys: /tvseries/120662 -> tvseries/120662
 func extractID(link string) string {
 	link = strings.TrimSpace(link)
 	if m := regexp.MustCompile(`/d-(\d+)\.html`).FindStringSubmatch(link); m != nil {

@@ -51,8 +51,8 @@ var (
 	rootCAsOnce sync.Once
 	rootCAs     *x509.CertPool
 
-	clientOnce sync.Once
-	httpClient *http.Client
+	clientOnce   sync.Once
+	httpClient   *http.Client
 	insecureOnce sync.Once
 	insecureCli  *http.Client
 
@@ -69,7 +69,7 @@ type fetchOpts struct {
 	Body    string
 	Headers map[string]string
 	Referer string
-	TTL     int           // 秒；<0 表示禁用缓存
+	TTL     int // 秒；<0 表示禁用缓存
 	Timeout time.Duration
 }
 

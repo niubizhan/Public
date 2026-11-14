@@ -2,6 +2,29 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v2.0.1 — 2026-11-14
+
+### 修复 HLS AES-128 密钥 404 导致加密片源无法播放
+
+实机播放 fofoys 加密 m3u8 时，源站日志出现连续 `GET /v/fofoys/enc.key 404`：
+`absolutize()` 原先跳过所有 `#` 开头行，清单里的
+`#EXT-X-KEY:METHOD=AES-128,URI="enc.key"` 未被改写，播放器把相对 URI
+拼到本地服务 `/v/{site}/enc.key` → 404 → 分片无法解密、播放黑屏。
+
+- `absolutize()` 新增处理 `#EXT-X-KEY` / `#EXT-X-MAP` / `#EXT-X-SESSION-KEY`
+  行的 `URI="..."`：按原始清单 URL 解析成绝对地址，改写为
+  `enc.key?u=<绝对密钥URL>&ref=<原清单URL>`，改走本地代理。
+- 新增 `handleHLSKey()`（`/v/{site}/enc.key` 路由），带播放器 UA 与 Referer
+  回源取密钥，规避防盗链；用 `lastBase` 缓存「最近一次清单目录」兜底
+  播放器丢掉 query 的情况。
+- `/v/` 路由按子路径分发清单与密钥；`appVersion` 升到 `2.0.1-goquery`。
+
+验证：本机与 TCL 电视端均返回 `200 / 16 字节` AES-128 key；重启 TVBox 后
+源站日志出现 `GET /` 与 `GET /api/ixcyy`，配置持久化生效。
+同轮电视端 TVBox 换装 `TVBox_4.4_armeabi-v7a.apk`（`1.0.0-tv44`，
+证书 CN=TVBox4.4，与旧包签名不同故数据清空），已通过 9978 POST
+重新写入接口地址 `http://127.0.0.1:8787/`。
+
 ## v2.0.0 — 2026-11-14
 
 ### 新增 `spider-go/`：按 fongmi 爬虫规范重写的 Go 源站（双站点，goquery 解析）
