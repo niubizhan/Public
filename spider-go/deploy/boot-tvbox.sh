@@ -33,9 +33,11 @@ if [ ! -x ./tvbox44 ]; then
 fi
 
 # 3) 看门狗：进程退出 5 秒后拉起（源站在内存吃紧时可能被系统杀掉）
-# 监听 127.0.0.1 而非 0.0.0.0：只给本机 TVBox 用，不暴露到局域网。
+# 监听 0.0.0.0：本机 TVBox 用 http://127.0.0.1:8787/ 回环照常可用，
+# 同时允许局域网设备访问 http://<电视IP>:8787/（源站无鉴权，注意暴露面）。
+# 收回为仅本机访问：把下面的 0.0.0.0 改回 127.0.0.1 并重启本脚本。
 while true; do
-  ./tvbox44 -port 8787 -addr 127.0.0.1 > tvbox.log 2>&1
+  ./tvbox44 -port 8787 -addr 0.0.0.0 > tvbox.log 2>&1
   log -t $TAG "service exited (rc=$?), restart in 5s"
   sleep 5
 done

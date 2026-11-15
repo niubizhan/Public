@@ -2,6 +2,23 @@
 
 TVBox 4.4 type=1 接口（fofo影视 / 飘花影视 / 星辰影院），部署形态为 Cloudflare Worker + 本机局域网 HTTP 服务（`server.mjs`，端口 8787）；自 v1.4.0 起另有 Go 版可**直接跑在电视上**（`tvgo/`），不再依赖电脑。
 
+## v2.2.1 — 2026-11-15
+
+### 源站开放局域网访问
+
+需求：电脑无法访问 `http://192.168.5.21:8787`。根因是服务只监听 `127.0.0.1`（旧脚本刻意设定为「只给本机 TVBox 用」）。本版**仅改部署脚本**，Go 源码与二进制零改动（`-addr` 是运行参数，程序默认值本就是 `0.0.0.0`）。
+
+- `spider-go/deploy/boot-tvbox.sh:40`、`start-tvbox.sh:17`：`-addr 127.0.0.1` → `-addr 0.0.0.0`，注释同步说明回环接口仍可用、源站无鉴权的暴露面、以及收回仅本机访问的方法。
+- 电视 `/data/local/tmp/` 下两个脚本已覆盖并 chmod 755；`/system/etc/install-recovery.sh` 开机钩子**未改动**，下次开机仍调用 `boot-tvbox.sh`，自动以新参数启动。
+- 部署坑：`adb push` 覆盖脚本会替换 inode，旧看门狗进程仍持有 `(deleted)` 的旧脚本 fd，继续用 `127.0.0.1` 每 5 秒抢写 `tvbox.log` 并报 `bind: address already in use`。必须 `su 0 kill` 旧看门狗 + 服务，再以 root 重启 `boot-tvbox.sh`（PPID=1），否则日志污染且服务挂掉后会被旧参数拉起。
+- 回滚：电视 `/data/local/tmp/boot-tvbox.sh.v220.bak`、`start-tvbox.sh.v220.bak` 覆盖回去并重启看门狗即可。
+
+核验（2026-11-15）：
+- 电视 `netstat`：`tcp6 :::8787 LISTEN`（0.0.0.0 双栈）；日志 `listening on 0.0.0.0:8787`，无 bind 错误；进程 root 看门狗 PPID=1 + root `tvbox44`。
+- 电脑 `http://192.168.5.21:8787/health` 200；`/` 配置 2 站点、ixcyy 117 条、fofoys 35 条均 200。
+- TVBox 本机回环 `http://127.0.0.1:8787/` 仍 200（netstat 见 127.0.0.1 ESTABLISHED），接口地址**无需重填**。
+- 未做整机重启验证；开机钩子内容已核验指向新脚本。
+
 ## v2.2.0 — 2026-11-14
 
 ### 并发预取分片 + 线路自动测速选最快

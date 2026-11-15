@@ -11,5 +11,8 @@ if [ -n "$LINE" ]; then
   sleep 1
 fi
 trap "" HUP
-( ./tvbox44 -port 8787 -addr 127.0.0.1 >> tvbox.log 2>&1 < /dev/null & )
+# 监听 0.0.0.0：本机 TVBox 的 http://127.0.0.1:8787/ 走回环照常可用，
+# 同时允许同一局域网的电脑/手机直接访问 http://<电视IP>:8787/。
+# 源站无鉴权，如需收回为仅本机，把下面的 0.0.0.0 改回 127.0.0.1。
+( ./tvbox44 -port 8787 -addr 0.0.0.0 >> tvbox.log 2>&1 < /dev/null & )
 exit 0
