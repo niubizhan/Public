@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-15T22:22:35.703Z",
+  "generatedAt": "2026-11-17T01:22:04.837Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 194010,
+  "durationMs": 86835,
   "sites": [
     {
       "site": "fofoys",
@@ -19,8 +19,8 @@
       "site": "piaoys",
       "name": "飘花影视",
       "mode": "remote",
-      "home": 71,
-      "categories": 370,
+      "home": 68,
+      "categories": 374,
       "search": 0,
       "detail": 1,
       "play": "https://v.fengbao8.com/video/woaidenanren/高清/index.m3u8",
@@ -31,18 +31,18 @@
       "site": "xcyycn",
       "name": "星辰影院",
       "mode": "remote",
-      "home": 119,
+      "home": 0,
       "categories": 0,
       "search": 0,
       "detail": 0,
       "play": "",
       "errors": [
-        "category-1: HTTP 522 https://www.ixcyy.tv/v/1.html",
-        "category-2: The operation was aborted",
-        "category-3: HTTP 522 https://www.ixcyy.tv/v/3.html",
+        "home: The operation was aborted",
+        "category-1: HTTP 444 https://www.ixcyy.tv/v/1.html",
+        "category-2: HTTP 444 https://www.ixcyy.tv/v/2.html",
         "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
       ],
-      "error": "category-1: HTTP 522 https://www.ixcyy.tv/v/1.html | category-2: The operation was aborted | category-3: HTTP 522 https://www.ixcyy.tv/v/3.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "error": "home: The operation was aborted | category-1: HTTP 444 https://www.ixcyy.tv/v/1.html | category-2: HTTP 444 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
