@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-20T00:05:25.873Z",
+  "generatedAt": "2026-11-20T23:35:35.702Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 83689,
+  "durationMs": 246589,
   "sites": [
     {
       "site": "fofoys",
@@ -21,7 +21,7 @@
       "mode": "remote",
       "home": 71,
       "categories": 381,
-      "search": 0,
+      "search": 43,
       "detail": 1,
       "play": "https://v.fengbao8.com/video/woaidenanren/高清/index.m3u8",
       "errors": [],
@@ -37,12 +37,12 @@
       "detail": 0,
       "play": "",
       "errors": [
-        "home: HTTP 522 https://www.ixcyy.tv/",
+        "home: The operation was aborted",
         "category-1: HTTP 444 https://www.ixcyy.tv/v/1.html",
         "category-2: HTTP 444 https://www.ixcyy.tv/v/2.html",
         "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
       ],
-      "error": "home: HTTP 522 https://www.ixcyy.tv/ | category-1: HTTP 444 https://www.ixcyy.tv/v/1.html | category-2: HTTP 444 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "error": "home: The operation was aborted | category-1: HTTP 444 https://www.ixcyy.tv/v/1.html | category-2: HTTP 444 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
