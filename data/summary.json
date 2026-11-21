@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-11-20T23:35:35.702Z",
+  "generatedAt": "2026-11-21T22:40:17.769Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 246589,
+  "durationMs": 114216,
   "sites": [
     {
       "site": "fofoys",
       "name": "fofo影视",
       "mode": "remote",
       "home": 35,
-      "categories": 299,
+      "categories": 298,
       "search": 40,
       "detail": 1,
       "play": "",
@@ -20,10 +20,10 @@
       "name": "飘花影视",
       "mode": "remote",
       "home": 71,
-      "categories": 381,
+      "categories": 377,
       "search": 43,
       "detail": 1,
-      "play": "https://v.fengbao8.com/video/woaidenanren/高清/index.m3u8",
+      "play": "https://hn.bfvvs.com/play/QeZZyEep/index.m3u8",
       "errors": [],
       "error": ""
     },
