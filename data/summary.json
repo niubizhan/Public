@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-21T22:40:17.769Z",
+  "generatedAt": "2026-11-22T23:02:00.048Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 114216,
+  "durationMs": 75588,
   "sites": [
     {
       "site": "fofoys",
@@ -20,10 +20,10 @@
       "name": "飘花影视",
       "mode": "remote",
       "home": 71,
-      "categories": 377,
+      "categories": 375,
       "search": 43,
       "detail": 1,
-      "play": "https://hn.bfvvs.com/play/QeZZyEep/index.m3u8",
+      "play": "https://hn.bfvvs.com/play/axklJyqe/index.m3u8",
       "errors": [],
       "error": ""
     },
