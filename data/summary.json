@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-27T01:22:44.694Z",
+  "generatedAt": "2026-11-28T00:58:01.068Z",
   "mode": "remote:https://tvbox44-crawler.pages.dev",
-  "durationMs": 110519,
+  "durationMs": 235058,
   "sites": [
     {
       "site": "fofoys",
@@ -19,8 +19,8 @@
       "site": "piaoys",
       "name": "飘花影视",
       "mode": "remote",
-      "home": 71,
-      "categories": 380,
+      "home": 70,
+      "categories": 379,
       "search": 43,
       "detail": 1,
       "play": "https://v6.rstu6.com/202311/15/cpAkukr0Dc1/video/index.m3u8",
@@ -38,11 +38,11 @@
       "play": "",
       "errors": [
         "home: The operation was aborted",
-        "category-1: HTTP 444 https://www.ixcyy.tv/v/1.html",
-        "category-2: HTTP 444 https://www.ixcyy.tv/v/2.html",
+        "category-1: HTTP 522 https://www.ixcyy.tv/v/1.html",
+        "category-2: HTTP 522 https://www.ixcyy.tv/v/2.html",
         "判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
       ],
-      "error": "home: The operation was aborted | category-1: HTTP 444 https://www.ixcyy.tv/v/1.html | category-2: HTTP 444 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
+      "error": "home: The operation was aborted | category-1: HTTP 522 https://www.ixcyy.tv/v/1.html | category-2: HTTP 522 https://www.ixcyy.tv/v/2.html | 判定：该站点当前不可达（连续失败 3 步），已跳过剩余步骤"
     }
   ]
 }
